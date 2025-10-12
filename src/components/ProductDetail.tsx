@@ -71,8 +71,12 @@ export function ProductDetail({ product, onBack }: ProductDetailProps) {
   });
 
   const totalPrice = product.price * quantity;
-  const savings = Math.floor(product.price * 0.15);
+  const originalPrice = 1500; // Original price before Diwali sale
+  const savings = 500; // Diwali discount
   const hasPaymentSuccess = paymentResult?.status === 'success';
+  
+  // Diwali Sale Countdown Timer (12 minutes)
+  const [timeLeft, setTimeLeft] = useState(12 * 60); // 12 minutes in seconds
 
   // All the helper functions and useEffects from App.tsx
   const normalizeZapUpiPayload = (value: string) => {
@@ -124,6 +128,15 @@ export function ProductDetail({ product, onBack }: ProductDetailProps) {
 
     return () => clearInterval(interval);
   }, [product.images]);
+
+  // Countdown Timer for Diwali Sale (12 minutes)
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setTimeLeft((prev) => (prev > 0 ? prev - 1 : 0));
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, []);
 
   useEffect(() => {
     if (!paymentExpiresAt || !hasPaymentSuccess) {
@@ -592,12 +605,27 @@ export function ProductDetail({ product, onBack }: ProductDetailProps) {
           <h1 className="text-2xl font-bold text-gray-900 mb-2">{product.name}</h1>
           <p className="text-gray-600 mb-4">{product.description}</p>
 
-          <div className="flex items-baseline gap-3 mb-6">
+          <div className="flex items-baseline gap-3 mb-4">
             <span className="text-4xl font-bold text-gray-900">₹{product.price}</span>
-            <span className="text-lg text-gray-400 line-through">₹{product.price + savings}</span>
-            <span className="bg-green-100 text-green-700 px-2 py-1 rounded text-sm font-semibold">
-              Save ₹{savings}
+            <span className="text-lg text-gray-400 line-through">₹1500</span>
+            <span className="bg-green-100 text-green-700 px-3 py-1 rounded-lg text-sm font-bold">
+              Save ₹500
             </span>
+          </div>
+
+          {/* Diwali Sale Countdown Timer */}
+          <div className="bg-gradient-to-r from-orange-50 to-red-50 border-2 border-orange-200 rounded-xl p-4 mb-6">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Timer className="w-5 h-5 text-orange-600 animate-pulse" />
+                <span className="text-sm font-semibold text-gray-700">🪔 Diwali Sale Ending Soon!</span>
+              </div>
+              <div className="bg-white px-4 py-2 rounded-lg border-2 border-orange-300">
+                <span className="text-2xl font-black text-orange-600 tabular-nums">
+                  {Math.floor(timeLeft / 60).toString().padStart(2, '0')}:{(timeLeft % 60).toString().padStart(2, '0')}
+                </span>
+              </div>
+            </div>
           </div>
 
           {/* Features */}
@@ -629,6 +657,8 @@ export function ProductDetail({ product, onBack }: ProductDetailProps) {
                     </label>
                     <input
                       type="text"
+                      name="name"
+                      id="customer-name"
                       value={customerName}
                       onChange={(e) => {
                         setCustomerName(e.target.value);
@@ -660,6 +690,8 @@ export function ProductDetail({ product, onBack }: ProductDetailProps) {
                     </label>
                     <input
                       type="tel"
+                      name="tel"
+                      id="customer-mobile"
                       value={customerMobile}
                       onChange={(e) => {
                         setCustomerMobile(e.target.value);
@@ -692,6 +724,8 @@ export function ProductDetail({ product, onBack }: ProductDetailProps) {
                     </label>
                     <input
                       type="email"
+                      name="email"
+                      id="customer-email"
                       value={customerEmail}
                       onChange={(e) => {
                         setCustomerEmail(e.target.value);
