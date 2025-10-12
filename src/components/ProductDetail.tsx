@@ -58,6 +58,17 @@ export function ProductDetail({ product, onBack }: ProductDetailProps) {
   const [remainingSeconds, setRemainingSeconds] = useState(0);
   const [paymentExpired, setPaymentExpired] = useState(false);
   const customerFormRef = useRef<HTMLDivElement | null>(null);
+  
+  // Field error tracking
+  const [fieldErrors, setFieldErrors] = useState({
+    name: false,
+    mobile: false,
+    email: false,
+    address: false,
+    city: false,
+    state: false,
+    pincode: false
+  });
 
   const totalPrice = product.price * quantity;
   const savings = Math.floor(product.price * 0.15);
@@ -228,55 +239,96 @@ export function ProductDetail({ product, onBack }: ProductDetailProps) {
     setPaymentExpiresAt(null);
     setRemainingSeconds(0);
     setPaymentExpired(false);
+    setFieldErrors({
+      name: false,
+      mobile: false,
+      email: false,
+      address: false,
+      city: false,
+      state: false,
+      pincode: false
+    });
   };
 
   const handlePayment = async () => {
     // Scroll to form first to show user the fields
     scrollToCustomerForm('smooth');
     
-    // Validate all required fields
+    // Reset field errors
+    const errors = {
+      name: false,
+      mobile: false,
+      email: false,
+      address: false,
+      city: false,
+      state: false,
+      pincode: false
+    };
+    
+    // Validate all required fields and mark errors
     if (!customerName.trim()) {
+      errors.name = true;
       setError('❌ Please enter your full name');
+      setFieldErrors(errors);
       return;
     }
     if (!customerMobile.trim()) {
+      errors.mobile = true;
       setError('❌ Please enter your mobile number');
+      setFieldErrors(errors);
       return;
     }
     if (customerMobile.trim().length !== 10) {
+      errors.mobile = true;
       setError('❌ Mobile number must be exactly 10 digits');
+      setFieldErrors(errors);
       return;
     }
     if (!customerEmail.trim()) {
+      errors.email = true;
       setError('❌ Please enter your email address');
+      setFieldErrors(errors);
       return;
     }
     if (!customerEmail.includes('@')) {
+      errors.email = true;
       setError('❌ Please enter a valid email address');
+      setFieldErrors(errors);
       return;
     }
     if (!customerAddress.trim()) {
+      errors.address = true;
       setError('❌ Please enter your delivery address');
+      setFieldErrors(errors);
       return;
     }
     if (!customerCity.trim()) {
+      errors.city = true;
       setError('❌ Please enter your city');
+      setFieldErrors(errors);
       return;
     }
     if (!customerState.trim()) {
+      errors.state = true;
       setError('❌ Please enter your state');
+      setFieldErrors(errors);
       return;
     }
     if (!customerPincode.trim()) {
+      errors.pincode = true;
       setError('❌ Please enter your pincode');
+      setFieldErrors(errors);
       return;
     }
     if (customerPincode.trim().length !== 6) {
+      errors.pincode = true;
       setError('❌ Pincode must be exactly 6 digits');
+      setFieldErrors(errors);
       return;
     }
 
-    // All validations passed
+    // All validations passed - clear all errors
+    setFieldErrors(errors);
     setIsProcessing(true);
     setError('');
     setStatusMessage('Creating your secure payment link...');
@@ -557,12 +609,27 @@ export function ProductDetail({ product, onBack }: ProductDetailProps) {
                     <input
                       type="text"
                       value={customerName}
-                      onChange={(e) => setCustomerName(e.target.value)}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                      onChange={(e) => {
+                        setCustomerName(e.target.value);
+                        if (fieldErrors.name) {
+                          setFieldErrors({...fieldErrors, name: false});
+                          setError('');
+                        }
+                      }}
+                      className={`w-full px-4 py-3 border rounded-xl focus:ring-2 transition-all ${
+                        fieldErrors.name 
+                          ? 'border-red-500 bg-red-50 focus:ring-red-500 focus:border-red-500' 
+                          : 'border-gray-300 focus:ring-indigo-500 focus:border-transparent'
+                      }`}
                       placeholder="Enter your full name"
                       autoComplete="name"
                       required
                     />
+                    {fieldErrors.name && (
+                      <p className="text-red-600 text-sm mt-1 flex items-center gap-1">
+                        <span className="text-base">⚠️</span> Please fill in your full name
+                      </p>
+                    )}
                   </div>
 
                   <div>
@@ -573,13 +640,28 @@ export function ProductDetail({ product, onBack }: ProductDetailProps) {
                     <input
                       type="tel"
                       value={customerMobile}
-                      onChange={(e) => setCustomerMobile(e.target.value)}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                      onChange={(e) => {
+                        setCustomerMobile(e.target.value);
+                        if (fieldErrors.mobile) {
+                          setFieldErrors({...fieldErrors, mobile: false});
+                          setError('');
+                        }
+                      }}
+                      className={`w-full px-4 py-3 border rounded-xl focus:ring-2 transition-all ${
+                        fieldErrors.mobile 
+                          ? 'border-red-500 bg-red-50 focus:ring-red-500 focus:border-red-500' 
+                          : 'border-gray-300 focus:ring-indigo-500 focus:border-transparent'
+                      }`}
                       placeholder="10-digit mobile number"
                       maxLength={10}
                       autoComplete="tel"
                       required
                     />
+                    {fieldErrors.mobile && (
+                      <p className="text-red-600 text-sm mt-1 flex items-center gap-1">
+                        <span className="text-base">⚠️</span> Please enter a valid 10-digit mobile number
+                      </p>
+                    )}
                   </div>
 
                   <div>
@@ -590,12 +672,27 @@ export function ProductDetail({ product, onBack }: ProductDetailProps) {
                     <input
                       type="email"
                       value={customerEmail}
-                      onChange={(e) => setCustomerEmail(e.target.value)}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                      onChange={(e) => {
+                        setCustomerEmail(e.target.value);
+                        if (fieldErrors.email) {
+                          setFieldErrors({...fieldErrors, email: false});
+                          setError('');
+                        }
+                      }}
+                      className={`w-full px-4 py-3 border rounded-xl focus:ring-2 transition-all ${
+                        fieldErrors.email 
+                          ? 'border-red-500 bg-red-50 focus:ring-red-500 focus:border-red-500' 
+                          : 'border-gray-300 focus:ring-indigo-500 focus:border-transparent'
+                      }`}
                       placeholder="your.email@example.com"
                       autoComplete="email"
                       required
                     />
+                    {fieldErrors.email && (
+                      <p className="text-red-600 text-sm mt-1 flex items-center gap-1">
+                        <span className="text-base">⚠️</span> Please enter a valid email address
+                      </p>
+                    )}
                   </div>
 
                   <div>
@@ -605,13 +702,28 @@ export function ProductDetail({ product, onBack }: ProductDetailProps) {
                     </label>
                     <textarea
                       value={customerAddress}
-                      onChange={(e) => setCustomerAddress(e.target.value)}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                      onChange={(e) => {
+                        setCustomerAddress(e.target.value);
+                        if (fieldErrors.address) {
+                          setFieldErrors({...fieldErrors, address: false});
+                          setError('');
+                        }
+                      }}
+                      className={`w-full px-4 py-3 border rounded-xl focus:ring-2 transition-all ${
+                        fieldErrors.address 
+                          ? 'border-red-500 bg-red-50 focus:ring-red-500 focus:border-red-500' 
+                          : 'border-gray-300 focus:ring-indigo-500 focus:border-transparent'
+                      }`}
                       placeholder="House No, Building, Street, Area"
                       rows={2}
                       autoComplete="street-address"
                       required
                     />
+                    {fieldErrors.address && (
+                      <p className="text-red-600 text-sm mt-1 flex items-center gap-1">
+                        <span className="text-base">⚠️</span> Please enter your complete delivery address
+                      </p>
+                    )}
                   </div>
 
                   <div className="grid grid-cols-2 gap-4">
@@ -623,12 +735,27 @@ export function ProductDetail({ product, onBack }: ProductDetailProps) {
                       <input
                         type="text"
                         value={customerCity}
-                        onChange={(e) => setCustomerCity(e.target.value)}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                        onChange={(e) => {
+                          setCustomerCity(e.target.value);
+                          if (fieldErrors.city) {
+                            setFieldErrors({...fieldErrors, city: false});
+                            setError('');
+                          }
+                        }}
+                        className={`w-full px-4 py-3 border rounded-xl focus:ring-2 transition-all ${
+                          fieldErrors.city 
+                            ? 'border-red-500 bg-red-50 focus:ring-red-500 focus:border-red-500' 
+                            : 'border-gray-300 focus:ring-indigo-500 focus:border-transparent'
+                        }`}
                         placeholder="City"
                         autoComplete="address-level2"
                         required
                       />
+                      {fieldErrors.city && (
+                        <p className="text-red-600 text-sm mt-1 flex items-center gap-1">
+                          <span className="text-base">⚠️</span> Please enter city
+                        </p>
+                      )}
                     </div>
 
                     <div>
@@ -638,12 +765,27 @@ export function ProductDetail({ product, onBack }: ProductDetailProps) {
                       <input
                         type="text"
                         value={customerState}
-                        onChange={(e) => setCustomerState(e.target.value)}
-                        className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                        onChange={(e) => {
+                          setCustomerState(e.target.value);
+                          if (fieldErrors.state) {
+                            setFieldErrors({...fieldErrors, state: false});
+                            setError('');
+                          }
+                        }}
+                        className={`w-full px-4 py-3 border rounded-xl focus:ring-2 transition-all ${
+                          fieldErrors.state 
+                            ? 'border-red-500 bg-red-50 focus:ring-red-500 focus:border-red-500' 
+                            : 'border-gray-300 focus:ring-indigo-500 focus:border-transparent'
+                        }`}
                         placeholder="State"
                         autoComplete="address-level1"
                         required
                       />
+                      {fieldErrors.state && (
+                        <p className="text-red-600 text-sm mt-1 flex items-center gap-1">
+                          <span className="text-base">⚠️</span> Please enter state
+                        </p>
+                      )}
                     </div>
                   </div>
 
@@ -655,13 +797,28 @@ export function ProductDetail({ product, onBack }: ProductDetailProps) {
                     <input
                       type="text"
                       value={customerPincode}
-                      onChange={(e) => setCustomerPincode(e.target.value)}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                      onChange={(e) => {
+                        setCustomerPincode(e.target.value);
+                        if (fieldErrors.pincode) {
+                          setFieldErrors({...fieldErrors, pincode: false});
+                          setError('');
+                        }
+                      }}
+                      className={`w-full px-4 py-3 border rounded-xl focus:ring-2 transition-all ${
+                        fieldErrors.pincode 
+                          ? 'border-red-500 bg-red-50 focus:ring-red-500 focus:border-red-500' 
+                          : 'border-gray-300 focus:ring-indigo-500 focus:border-transparent'
+                      }`}
                       placeholder="6-digit pincode"
                       maxLength={6}
                       autoComplete="postal-code"
                       required
                     />
+                    {fieldErrors.pincode && (
+                      <p className="text-red-600 text-sm mt-1 flex items-center gap-1">
+                        <span className="text-base">⚠️</span> Please enter a valid 6-digit pincode
+                      </p>
+                    )}
                   </div>
 
                   <div>
