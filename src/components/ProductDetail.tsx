@@ -346,15 +346,37 @@ export function ProductDetail({ product, onBack }: ProductDetailProps) {
     }
   };
 
+  // Detect if user is on mobile device
+  const isMobileDevice = () => {
+    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+  };
+
   const openPaymentLink = (shouldOpenInPlace = false) => {
-    if (upiPaymentString && upiPaymentString.startsWith('upi://')) {
-      window.location.href = upiPaymentString;
+    const isMobile = isMobileDevice();
+    
+    // For mobile devices, try to open UPI app directly first
+    if (isMobile && upiPaymentString && upiPaymentString.startsWith('upi://')) {
+      // Show alert to user
+      const userConfirmed = window.confirm(
+        '💳 Open Payment App?\n\nThis will open your UPI payment app (PhonePe, Google Pay, Paytm, etc.) to complete the payment.\n\nClick OK to continue or Cancel to scan QR code instead.'
+      );
+      
+      if (userConfirmed) {
+        // Try to open UPI app
+        window.location.href = upiPaymentString;
+        
+        // Show success message after attempting to open
+        setTimeout(() => {
+          setStatusMessage('✅ Opening payment app... If it didn\'t open, please scan the QR code above.');
+        }, 500);
+      }
       return;
     }
 
+    // For desktop or if no UPI string, use payment URL
     const fallbackUrl = paymentResult?.payment_url?.trim();
     if (fallbackUrl) {
-      if (shouldOpenInPlace) {
+      if (shouldOpenInPlace || isMobile) {
         window.location.href = fallbackUrl;
       } else {
         window.open(fallbackUrl, '_blank', 'noopener,noreferrer');
@@ -677,15 +699,40 @@ export function ProductDetail({ product, onBack }: ProductDetailProps) {
                   <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
                     <QrCode className="w-8 h-8 text-green-600" />
                   </div>
-                  <h3 className="text-xl font-bold text-gray-900 mb-2">Scan to Pay</h3>
-                  <p className="text-gray-600 mb-4">Use any UPI app to complete payment</p>
+                  <h3 className="text-xl font-bold text-gray-900 mb-2">Complete Payment</h3>
+                  <p className="text-gray-600 mb-4">Choose your preferred payment method</p>
                 </div>
 
-                {qrCodeDataUrl && (
-                  <div className="bg-white p-4 rounded-xl border-2 border-indigo-200">
-                    <img src={qrCodeDataUrl} alt="Payment QR Code" className="w-full max-w-xs mx-auto" />
+                {/* Mobile: Direct UPI App Button */}
+                {isMobileDevice() && upiPaymentString && upiPaymentString.startsWith('upi://') && (
+                  <div className="mb-4">
+                    <button
+                      onClick={() => openPaymentLink(true)}
+                      className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 text-white py-4 rounded-xl font-bold text-lg shadow-lg hover:shadow-xl transform hover:scale-[1.02] transition-all flex items-center justify-center gap-2"
+                    >
+                      <ExternalLink className="w-5 h-5" />
+                      Open Payment App
+                    </button>
+                    <p className="text-xs text-center text-gray-500 mt-2">
+                      Opens PhonePe, Google Pay, Paytm, or your default UPI app
+                    </p>
+                    <div className="flex items-center gap-2 my-4">
+                      <div className="flex-1 border-t border-gray-300"></div>
+                      <span className="text-sm text-gray-500 font-medium">OR</span>
+                      <div className="flex-1 border-t border-gray-300"></div>
+                    </div>
                   </div>
                 )}
+
+                {/* QR Code for all users */}
+                <div className="text-center">
+                  <p className="text-sm font-semibold text-gray-700 mb-3">Scan QR Code to Pay</p>
+                  {qrCodeDataUrl && (
+                    <div className="bg-white p-4 rounded-xl border-2 border-indigo-200">
+                      <img src={qrCodeDataUrl} alt="Payment QR Code" className="w-full max-w-xs mx-auto" />
+                    </div>
+                  )}
+                </div>
 
                 {!paymentExpired && remainingSeconds > 0 && (
                   <div className="flex items-center justify-center gap-2 text-orange-600 font-semibold">
