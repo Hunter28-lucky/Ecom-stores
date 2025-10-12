@@ -1,28 +1,30 @@
 [
   {
     "id": "1",
-    "name": "Apple AirPods Pro",
+    "name": "Apple AirPods Pro (2nd Generation)",
     "price": 1000,
-    "image": "https://images.unsplash.com/photo-1572569511254-d8f925fe2cbb?w=500",
+    "image": "https://images.unsplash.com/photo-1606841837239-c5a1a4a07af7?w=800&q=95",
     "images": [
-      "https://images.unsplash.com/photo-1572569511254-d8f925fe2cbb?w=500",
-      "https://images.unsplash.com/photo-1606841837239-c5a1a4a07af7?w=500",
-      "https://images.unsplash.com/photo-1610438235354-a6ae5528385c?w=500",
-      "https://images.unsplash.com/photo-1588423771073-b8903fbb85b5?w=500"
+      "https://images.unsplash.com/photo-1606841837239-c5a1a4a07af7?w=800&q=95",
+      "https://images.unsplash.com/photo-1588423771073-b8903fbb85b5?w=800&q=95",
+      "https://images.unsplash.com/photo-1610438235354-a6ae5528385c?w=800&q=95",
+      "https://images.unsplash.com/photo-1572569511254-d8f925fe2cbb?w=800&q=95",
+      "https://images.unsplash.com/photo-1590658165737-15a047b7a3b8?w=800&q=95",
+      "https://images.unsplash.com/photo-1600294037681-c80b4cb5b434?w=800&q=95"
     ],
-    "category": "Audio",
-    "rating": 4.8,
-    "reviews": 256,
-    "description": "Premium Apple AirPods with active noise cancellation, crystal clear sound, and seamless connectivity. Experience the best wireless audio with long battery life.",
+    "category": "Premium Audio",
+    "rating": 4.9,
+    "reviews": 2847,
+    "description": "Experience superior sound quality with Apple AirPods Pro (2nd Generation). Featuring next-level Active Noise Cancellation, Adaptive Transparency, and Personalized Spatial Audio with dynamic head tracking for an immersive listening experience.",
     "features": [
-      "Active Noise Cancellation",
-      "Touch controls",
-      "20-hour playtime with case",
-      "IPX4 water resistant",
-      "Auto pairing",
-      "Premium sound quality",
-      "Comfortable design",
-      "Fast charging support"
+      "Up to 2x more Active Noise Cancellation",
+      "Adaptive Transparency filters environmental noise",
+      "Personalized Spatial Audio with dynamic head tracking",
+      "Up to 6 hours listening time (30 hours with case)",
+      "Touch control for music, calls & Siri",
+      "Sweat and water resistant (IPX4)",
+      "MagSafe & wireless charging case",
+      "Precision Finding with U1 chip"
     ]
   }
 ]

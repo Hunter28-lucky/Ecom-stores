@@ -5,6 +5,7 @@ export interface Product {
   name: string;
   price: number;
   image: string;
+  images?: string[]; // Optional array of additional product images
   category: string;
   rating: number;
   reviews: number;

@@ -37,6 +37,7 @@ interface ProductDetailProps {
 export function ProductDetail({ product, onBack }: ProductDetailProps) {
   const [showCheckout, setShowCheckout] = useState(true); // Auto-open checkout form
   const [quantity, setQuantity] = useState(1);
+  const [selectedImage, setSelectedImage] = useState(0); // For image gallery
   const [customerName, setCustomerName] = useState('');
   const [customerMobile, setCustomerMobile] = useState('');
   const [customerEmail, setCustomerEmail] = useState('');
@@ -403,16 +404,59 @@ export function ProductDetail({ product, onBack }: ProductDetailProps) {
       </div>
 
       <div className="max-w-sm sm:max-w-md mx-auto pb-32 px-4">
-        {/* Product Images */}
+        {/* Product Images Gallery */}
         <div className="mb-6">
-          <div className="relative rounded-3xl overflow-hidden shadow-2xl mb-4">
+          {/* Main Image */}
+          <div className="relative rounded-3xl overflow-hidden shadow-2xl mb-4 bg-gradient-to-br from-gray-50 to-gray-100">
             <img 
-              src={product.image}
-              alt={product.name}
+              src={product.images && product.images.length > 0 ? product.images[selectedImage] : product.image}
+              alt={`${product.name} - View ${selectedImage + 1}`}
               className="w-full aspect-square object-cover"
             />
-            <div className="absolute top-4 right-4 bg-red-500 text-white px-4 py-2 rounded-full font-bold text-sm shadow-lg">
+            <div className="absolute top-4 right-4 bg-gradient-to-r from-red-500 to-pink-500 text-white px-4 py-2 rounded-full font-bold text-sm shadow-lg animate-pulse">
               ₹{savings} OFF
+            </div>
+            <div className="absolute bottom-4 left-4 bg-white/90 backdrop-blur-sm text-gray-900 px-3 py-1 rounded-full text-xs font-semibold shadow-lg">
+              {selectedImage + 1} / {product.images?.length || 1}
+            </div>
+          </div>
+
+          {/* Thumbnail Gallery */}
+          {product.images && product.images.length > 1 && (
+            <div className="grid grid-cols-6 gap-2 mb-4">
+              {product.images.map((img, index) => (
+                <button
+                  key={index}
+                  onClick={() => setSelectedImage(index)}
+                  className={`relative rounded-xl overflow-hidden aspect-square transition-all duration-300 ${
+                    selectedImage === index 
+                      ? 'ring-4 ring-indigo-500 scale-105 shadow-lg' 
+                      : 'ring-2 ring-gray-200 hover:ring-indigo-300 opacity-70 hover:opacity-100'
+                  }`}
+                >
+                  <img 
+                    src={img}
+                    alt={`${product.name} view ${index + 1}`}
+                    className="w-full h-full object-cover"
+                  />
+                </button>
+              ))}
+            </div>
+          )}
+
+          {/* Product Highlights */}
+          <div className="grid grid-cols-3 gap-2 mb-4">
+            <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-3 text-center border border-blue-100">
+              <div className="text-xl font-bold text-indigo-600">4.9★</div>
+              <div className="text-xs text-gray-600 font-medium">Top Rated</div>
+            </div>
+            <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl p-3 text-center border border-green-100">
+              <div className="text-xl font-bold text-green-600">✓</div>
+              <div className="text-xs text-gray-600 font-medium">Verified</div>
+            </div>
+            <div className="bg-gradient-to-br from-orange-50 to-amber-50 rounded-xl p-3 text-center border border-orange-100">
+              <div className="text-xl font-bold text-orange-600">🚚</div>
+              <div className="text-xs text-gray-600 font-medium">Fast Ship</div>
             </div>
           </div>
         </div>
