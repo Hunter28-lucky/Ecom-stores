@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <!-- Background gradient -->
+  <defs>
+    <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#6366f1;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#8b5cf6;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background circle -->
+  <circle cx="256" cy="256" r="240" fill="url(#grad)" />
+  
+  <!-- Headphones icon -->
+  <g transform="translate(256, 256)" fill="white">
+    <!-- Headband -->
+    <path d="M -80,-120 Q 0,-180 80,-120" stroke="white" stroke-width="24" fill="none" stroke-linecap="round"/>
+    
+    <!-- Left ear cup -->
+    <rect x="-100" y="-60" width="40" height="80" rx="20" />
+    <rect x="-90" y="-50" width="20" height="60" rx="10" fill="#6366f1" opacity="0.5"/>
+    
+    <!-- Right ear cup -->
+    <rect x="60" y="-60" width="40" height="80" rx="20" />
+    <rect x="70" y="-50" width="20" height="60" rx="10" fill="#6366f1" opacity="0.5"/>
+    
+    <!-- Connection lines -->
+    <line x1="-80" y1="-100" x2="-80" y2="-60" stroke="white" stroke-width="12" stroke-linecap="round"/>
+    <line x1="80" y1="-100" x2="80" y2="-60" stroke="white" stroke-width="12" stroke-linecap="round"/>
+  </g>
+  
+  <!-- Shopping bag accent (small) -->
+  <g transform="translate(380, 380)" opacity="0.9">
+    <rect x="-20" y="-15" width="40" height="35" rx="4" fill="white"/>
+    <path d="M -12,-15 Q 0,-25 12,-15" stroke="white" stroke-width="3" fill="none"/>
+  </g>
+</svg>

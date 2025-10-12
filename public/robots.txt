@@ -1,0 +1,25 @@
+# robots.txt for https://ecom-stores-zeta.vercel.app/
+
+# Allow all crawlers
+User-agent: *
+Allow: /
+
+# Disallow admin/api paths
+Disallow: /api/
+Disallow: /*.json$
+
+# Sitemap location
+Sitemap: https://ecom-stores-zeta.vercel.app/sitemap.xml
+
+# Crawl-delay for specific bots (optional)
+User-agent: Googlebot
+Allow: /
+Crawl-delay: 0
+
+User-agent: Bingbot
+Allow: /
+Crawl-delay: 0
+
+User-agent: Slurp
+Allow: /
+Crawl-delay: 1
