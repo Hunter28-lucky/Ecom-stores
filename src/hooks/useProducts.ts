@@ -2,6 +2,12 @@ import { useState, useEffect } from 'react';
 import { productsApi, reviewsApi } from '../services/cms';
 import type { Product, Review } from '../lib/supabase';
 
+// Check if Supabase is configured
+const isSupabaseConfigured = Boolean(
+  import.meta.env.VITE_SUPABASE_URL && 
+  import.meta.env.VITE_SUPABASE_ANON_KEY
+);
+
 export function useProducts(featured?: boolean) {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
@@ -11,12 +17,21 @@ export function useProducts(featured?: boolean) {
     const fetchProducts = async () => {
       try {
         setLoading(true);
-        const data = await productsApi.getAll(featured);
-        setProducts(data);
+        
+        // Only try to fetch from Supabase if configured
+        if (isSupabaseConfigured) {
+          const data = await productsApi.getAll(featured);
+          setProducts(data);
+        } else {
+          // Return empty array if Supabase not configured
+          setProducts([]);
+        }
+        
         setError(null);
       } catch (err) {
-        console.error('Failed to fetch products:', err);
-        setError('Failed to load products');
+        console.warn('CMS not available, using fallback data:', err);
+        setProducts([]);
+        setError(null); // Don't show error, just use fallback
       } finally {
         setLoading(false);
       }
