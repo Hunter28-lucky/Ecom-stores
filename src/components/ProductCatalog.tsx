@@ -155,8 +155,9 @@ export function ProductCatalog() {
                       ₹{product.price}
                     </span>
                   </div>
-                  <button className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-6 py-3 rounded-xl font-semibold hover:shadow-lg transform hover:scale-105 transition-all duration-200">
-                    View Details
+                  <button className="bg-gradient-to-r from-green-600 to-emerald-600 text-white px-6 py-3 rounded-xl font-semibold hover:shadow-lg transform hover:scale-105 transition-all duration-200 flex items-center gap-2">
+                    <ShoppingCart className="w-5 h-5" />
+                    Buy Now
                   </button>
                 </div>
               </div>
