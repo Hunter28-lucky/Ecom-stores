@@ -100,19 +100,8 @@ export function ProductDetail({ product, onBack }: ProductDetailProps) {
     }
   };
 
-  // Auto-scroll to form on page load
-  useEffect(() => {
-    // Small delay to ensure DOM is ready
-    setTimeout(() => {
-      scrollToCustomerForm('smooth');
-    }, 300);
-  }, []);
-
-  useEffect(() => {
-    if (showCheckout) {
-      scrollToCustomerForm('auto');
-    }
-  }, [showCheckout]);
+  // No auto-scroll on page load - let user see images first
+  // Scroll happens when user clicks "Proceed to Payment"
 
   // Auto-swap images carousel for mobile
   useEffect(() => {
@@ -242,7 +231,52 @@ export function ProductDetail({ product, onBack }: ProductDetailProps) {
   };
 
   const handlePayment = async () => {
-    // Fields are optional - no validation required
+    // Scroll to form first to show user the fields
+    scrollToCustomerForm('smooth');
+    
+    // Validate all required fields
+    if (!customerName.trim()) {
+      setError('❌ Please enter your full name');
+      return;
+    }
+    if (!customerMobile.trim()) {
+      setError('❌ Please enter your mobile number');
+      return;
+    }
+    if (customerMobile.trim().length !== 10) {
+      setError('❌ Mobile number must be exactly 10 digits');
+      return;
+    }
+    if (!customerEmail.trim()) {
+      setError('❌ Please enter your email address');
+      return;
+    }
+    if (!customerEmail.includes('@')) {
+      setError('❌ Please enter a valid email address');
+      return;
+    }
+    if (!customerAddress.trim()) {
+      setError('❌ Please enter your delivery address');
+      return;
+    }
+    if (!customerCity.trim()) {
+      setError('❌ Please enter your city');
+      return;
+    }
+    if (!customerState.trim()) {
+      setError('❌ Please enter your state');
+      return;
+    }
+    if (!customerPincode.trim()) {
+      setError('❌ Please enter your pincode');
+      return;
+    }
+    if (customerPincode.trim().length !== 6) {
+      setError('❌ Pincode must be exactly 6 digits');
+      return;
+    }
+
+    // All validations passed
     setIsProcessing(true);
     setError('');
     setStatusMessage('Creating your secure payment link...');
@@ -511,14 +545,14 @@ export function ProductDetail({ product, onBack }: ProductDetailProps) {
           <div ref={customerFormRef} className="bg-white rounded-2xl p-6 shadow-lg mb-4">
             {!hasPaymentSuccess ? (
               <>
-                <h3 className="text-xl font-bold text-gray-900 mb-2">Delivery Details (Optional)</h3>
-                <p className="text-sm text-gray-500 mb-4">Fill your details for faster delivery tracking</p>
+                <h3 className="text-xl font-bold text-gray-900 mb-2">Delivery Details</h3>
+                <p className="text-sm text-gray-500 mb-4">Please fill all fields for delivery</p>
                 
                 <div className="space-y-4 mb-6">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       <User className="w-4 h-4 inline mr-1" />
-                      Full Name
+                      Full Name <span className="text-red-500">*</span>
                     </label>
                     <input
                       type="text"
@@ -527,13 +561,14 @@ export function ProductDetail({ product, onBack }: ProductDetailProps) {
                       className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                       placeholder="Enter your full name"
                       autoComplete="name"
+                      required
                     />
                   </div>
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       <Phone className="w-4 h-4 inline mr-1" />
-                      Mobile Number
+                      Mobile Number <span className="text-red-500">*</span>
                     </label>
                     <input
                       type="tel"
@@ -543,13 +578,14 @@ export function ProductDetail({ product, onBack }: ProductDetailProps) {
                       placeholder="10-digit mobile number"
                       maxLength={10}
                       autoComplete="tel"
+                      required
                     />
                   </div>
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       <Mail className="w-4 h-4 inline mr-1" />
-                      Email Address
+                      Email Address <span className="text-red-500">*</span>
                     </label>
                     <input
                       type="email"
@@ -558,13 +594,14 @@ export function ProductDetail({ product, onBack }: ProductDetailProps) {
                       className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                       placeholder="your.email@example.com"
                       autoComplete="email"
+                      required
                     />
                   </div>
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       <Home className="w-4 h-4 inline mr-1" />
-                      Delivery Address
+                      Delivery Address <span className="text-red-500">*</span>
                     </label>
                     <textarea
                       value={customerAddress}
@@ -573,6 +610,7 @@ export function ProductDetail({ product, onBack }: ProductDetailProps) {
                       placeholder="House No, Building, Street, Area"
                       rows={2}
                       autoComplete="street-address"
+                      required
                     />
                   </div>
 
@@ -580,7 +618,7 @@ export function ProductDetail({ product, onBack }: ProductDetailProps) {
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
                         <MapPin className="w-4 h-4 inline mr-1" />
-                        City
+                        City <span className="text-red-500">*</span>
                       </label>
                       <input
                         type="text"
@@ -589,12 +627,13 @@ export function ProductDetail({ product, onBack }: ProductDetailProps) {
                         className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                         placeholder="City"
                         autoComplete="address-level2"
+                        required
                       />
                     </div>
 
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
-                        State
+                        State <span className="text-red-500">*</span>
                       </label>
                       <input
                         type="text"
@@ -603,6 +642,7 @@ export function ProductDetail({ product, onBack }: ProductDetailProps) {
                         className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                         placeholder="State"
                         autoComplete="address-level1"
+                        required
                       />
                     </div>
                   </div>
@@ -610,7 +650,7 @@ export function ProductDetail({ product, onBack }: ProductDetailProps) {
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       <MapPin className="w-4 h-4 inline mr-1" />
-                      Pincode
+                      Pincode <span className="text-red-500">*</span>
                     </label>
                     <input
                       type="text"
@@ -620,6 +660,7 @@ export function ProductDetail({ product, onBack }: ProductDetailProps) {
                       placeholder="6-digit pincode"
                       maxLength={6}
                       autoComplete="postal-code"
+                      required
                     />
                   </div>
 
@@ -826,33 +867,25 @@ export function ProductDetail({ product, onBack }: ProductDetailProps) {
                 </button>
               </div>
             ) : (
-              <>
-                {/* Always show payment button - fields are optional */}
-                <button
-                  onClick={handlePayment}
-                  disabled={isProcessing}
-                  className={`w-full bg-gradient-to-r from-green-600 to-emerald-600 text-white py-4 rounded-2xl font-bold text-lg shadow-lg hover:shadow-xl transform hover:scale-[1.02] active:scale-95 transition-all duration-200 flex items-center justify-center gap-2 ${
-                    isProcessing ? 'opacity-75 cursor-not-allowed' : ''
-                  }`}
-                >
-                  {isProcessing ? (
-                    <>
-                      <Loader2 className="w-5 h-5 animate-spin" />
-                      Processing...
-                    </>
-                  ) : (
-                    <>
-                      <Lock className="w-5 h-5" />
-                      Proceed to Payment
-                    </>
-                  )}
-                </button>
-                
-                {/* Optional: Show hint about filling details */}
-                <p className="text-xs text-center text-gray-500 mt-2">
-                  💡 Fill your details above for faster delivery tracking
-                </p>
-              </>
+              <button
+                onClick={handlePayment}
+                disabled={isProcessing}
+                className={`w-full bg-gradient-to-r from-green-600 to-emerald-600 text-white py-4 rounded-2xl font-bold text-lg shadow-lg hover:shadow-xl transform hover:scale-[1.02] active:scale-95 transition-all duration-200 flex items-center justify-center gap-2 ${
+                  isProcessing ? 'opacity-75 cursor-not-allowed' : ''
+                }`}
+              >
+                {isProcessing ? (
+                  <>
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                    Processing...
+                  </>
+                ) : (
+                  <>
+                    <Lock className="w-5 h-5" />
+                    Proceed to Payment
+                  </>
+                )}
+              </button>
             )}
           </div>
         </div>
