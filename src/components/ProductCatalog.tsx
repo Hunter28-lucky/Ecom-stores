@@ -77,52 +77,31 @@ export function ProductCatalog() {
       {/* Header - Matte Black Theme */}
       <header className="bg-black/95 backdrop-blur-sm border-b border-white/10 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-center sm:justify-between">
             <div className="flex items-center space-x-4">
-              {/* Professional Logo */}
-              <div className="relative group">
-                <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-pink-600 rounded-2xl blur-lg opacity-50 group-hover:opacity-75 transition-opacity"></div>
-                <div className="relative bg-gradient-to-br from-purple-600 via-pink-600 to-red-600 p-3 rounded-2xl shadow-2xl">
-                  <ShoppingCart className="w-8 h-8 text-white" strokeWidth={2.5} />
-                </div>
-              </div>
+              {/* Real TechStore Logo from Internet */}
+              <img 
+                src="https://cdn-icons-png.flaticon.com/512/869/869636.png" 
+                alt="TechStore Logo" 
+                className="w-12 h-12 sm:w-14 sm:h-14"
+              />
               <div>
-                <h1 className="text-3xl font-black bg-gradient-to-r from-white via-gray-200 to-gray-400 bg-clip-text text-transparent tracking-tight">
+                <h1 className="text-2xl sm:text-3xl font-black bg-gradient-to-r from-white via-gray-200 to-gray-400 bg-clip-text text-transparent tracking-tight">
                   TechStore
                 </h1>
                 <p className="text-xs text-gray-500 font-medium tracking-wider uppercase">Premium Electronics</p>
               </div>
             </div>
-            <div className="flex items-center space-x-4">
-              <div className="hidden sm:flex items-center space-x-2 bg-white/5 px-4 py-2 rounded-xl border border-white/10">
-                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                <span className="text-sm text-gray-400 font-medium">{products.length} Products Available</span>
-              </div>
+            <div className="hidden sm:flex items-center space-x-2 bg-white/5 px-4 py-2 rounded-xl border border-white/10">
+              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+              <span className="text-sm text-gray-400 font-medium">{products.length} Products Available</span>
             </div>
           </div>
         </div>
       </header>
 
-      {/* Hero Section */}
-      <div className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-purple-900/20 via-pink-900/20 to-red-900/20"></div>
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20">
-          <div className="text-center">
-            <h2 className="text-5xl sm:text-6xl lg:text-7xl font-black text-white mb-6 tracking-tight">
-              Discover Amazing
-              <span className="block bg-gradient-to-r from-purple-400 via-pink-400 to-red-400 bg-clip-text text-transparent">
-                Products
-              </span>
-            </h2>
-            <p className="text-lg sm:text-xl text-gray-400 max-w-2xl mx-auto font-light">
-              Browse our curated collection of premium electronics and accessories
-            </p>
-          </div>
-        </div>
-      </div>
-
-      {/* Products Grid */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
+      {/* Products Grid - No Hero Section */}
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
           {products.map((product) => (
