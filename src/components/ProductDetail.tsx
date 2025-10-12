@@ -990,27 +990,29 @@ export function ProductDetail({ product, onBack }: ProductDetailProps) {
                   <button
                     onClick={() => openPaymentLink(true)}
                     disabled={!upiPaymentString && !paymentResult?.payment_url}
-                    className={`bg-gradient-to-r from-purple-700 to-purple-600 text-white py-3 rounded-xl font-bold shadow-lg hover:shadow-xl transform transition-all flex items-center justify-center gap-2 ${
-                      upiPaymentString || paymentResult?.payment_url ? 'hover:scale-[1.02]' : 'opacity-60 cursor-not-allowed'
+                    className={`bg-white border-2 border-purple-200 py-4 rounded-xl font-bold shadow-lg hover:shadow-xl transform transition-all flex items-center justify-center ${
+                      upiPaymentString || paymentResult?.payment_url ? 'hover:scale-[1.02] hover:border-purple-400' : 'opacity-60 cursor-not-allowed'
                     }`}
                   >
-                    <svg viewBox="0 0 24 24" className="w-5 h-5" fill="currentColor">
-                      <path d="M13.01 2L4 8.5V22h7v-7h2v7h7V8.5L13.01 2zm4.99 16h-3v-7h-6v7H6V9.5l7-5 7 5V18z"/>
-                    </svg>
-                    PhonePe
+                    <img 
+                      src="https://static.vecteezy.com/system/resources/thumbnails/049/116/753/small_2x/phonepe-app-icon-transparent-background-free-png.png" 
+                      alt="PhonePe" 
+                      className="h-10 w-auto object-contain"
+                    />
                   </button>
                   
                   <button
                     onClick={() => openPaymentLink(true)}
                     disabled={!upiPaymentString && !paymentResult?.payment_url}
-                    className={`bg-gradient-to-r from-blue-600 to-blue-500 text-white py-3 rounded-xl font-bold shadow-lg hover:shadow-xl transform transition-all flex items-center justify-center gap-2 ${
-                      upiPaymentString || paymentResult?.payment_url ? 'hover:scale-[1.02]' : 'opacity-60 cursor-not-allowed'
+                    className={`bg-white border-2 border-blue-200 py-4 rounded-xl font-bold shadow-lg hover:shadow-xl transform transition-all flex items-center justify-center ${
+                      upiPaymentString || paymentResult?.payment_url ? 'hover:scale-[1.02] hover:border-blue-400' : 'opacity-60 cursor-not-allowed'
                     }`}
                   >
-                    <svg viewBox="0 0 24 24" className="w-5 h-5" fill="currentColor">
-                      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm.31-8.86c-1.77-.45-2.34-.94-2.34-1.67 0-.84.79-1.43 2.1-1.43 1.38 0 1.9.66 1.94 1.64h1.71c-.05-1.34-.87-2.57-2.49-2.97V5H10.9v1.69c-1.51.32-2.72 1.3-2.72 2.81 0 1.79 1.49 2.69 3.66 3.21 1.95.46 2.34 1.15 2.34 1.87 0 .53-.39 1.39-2.1 1.39-1.6 0-2.23-.72-2.32-1.64H8.04c.1 1.7 1.36 2.66 2.86 2.97V19h2.34v-1.67c1.52-.29 2.72-1.16 2.73-2.77-.01-2.2-1.9-2.96-3.66-3.42z"/>
-                    </svg>
-                    GPay
+                    <img 
+                      src="https://upload.wikimedia.org/wikipedia/commons/f/f2/Google_Pay_Logo.svg" 
+                      alt="Google Pay" 
+                      className="h-8 w-auto object-contain"
+                    />
                   </button>
                 </div>
                 
@@ -1018,14 +1020,15 @@ export function ProductDetail({ product, onBack }: ProductDetailProps) {
                   <button
                     onClick={() => openPaymentLink(true)}
                     disabled={!upiPaymentString && !paymentResult?.payment_url}
-                    className={`bg-gradient-to-r from-cyan-600 to-blue-600 text-white py-3 rounded-xl font-bold shadow-lg hover:shadow-xl transform transition-all flex items-center justify-center gap-2 ${
-                      upiPaymentString || paymentResult?.payment_url ? 'hover:scale-[1.02]' : 'opacity-60 cursor-not-allowed'
+                    className={`bg-white border-2 border-blue-200 py-4 rounded-xl font-bold shadow-lg hover:shadow-xl transform transition-all flex items-center justify-center ${
+                      upiPaymentString || paymentResult?.payment_url ? 'hover:scale-[1.02] hover:border-blue-400' : 'opacity-60 cursor-not-allowed'
                     }`}
                   >
-                    <svg viewBox="0 0 24 24" className="w-5 h-5" fill="currentColor">
-                      <path d="M4 4h16v16H4V4m2 2v12h12V6H6m2 2h8v2H8V8m0 4h8v2H8v-2m0 4h5v2H8v-2z"/>
-                    </svg>
-                    Paytm
+                    <img 
+                      src="https://static.vecteezy.com/system/resources/thumbnails/051/336/375/small_2x/paytm-upi-transparent-icon-free-png.png" 
+                      alt="Paytm" 
+                      className="h-10 w-auto object-contain"
+                    />
                   </button>
                   
                   <button
