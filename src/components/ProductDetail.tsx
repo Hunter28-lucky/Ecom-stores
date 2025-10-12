@@ -415,22 +415,24 @@ export function ProductDetail({ product, onBack }: ProductDetailProps) {
       let finalUrl = upiPaymentString;
       
       // Convert to app-specific deep link based on button clicked
-      if (appName && upiPaymentString.startsWith('upi://')) {
-        const upiParams = upiPaymentString.replace('upi://', '');
+      if (appName) {
+        // Extract the UPI payment parameters from the original string
+        // Format: upi://pay?pa=xxx@xxx&pn=xxx&am=xxx&cu=INR&tn=xxx
         
         switch(appName.toLowerCase()) {
           case 'phonepe':
-            // PhonePe specific deep link
-            finalUrl = `phonepe://pay?${upiParams}`;
+            // PhonePe accepts standard UPI format but with phonepe:// prefix
+            // Keep the full upi://pay structure, just change protocol
+            finalUrl = upiPaymentString.replace('upi://', 'phonepe://');
             break;
           case 'googlepay':
           case 'gpay':
-            // Google Pay specific deep link
-            finalUrl = `tez://upi/pay?${upiParams}`;
+            // Google Pay uses tez://upi/pay format with same parameters
+            finalUrl = upiPaymentString.replace('upi://pay', 'tez://upi/pay');
             break;
           case 'paytm':
-            // Paytm specific deep link
-            finalUrl = `paytmmp://pay?${upiParams}`;
+            // Paytm uses paytmmp://pay format with same parameters
+            finalUrl = upiPaymentString.replace('upi://pay', 'paytmmp://pay');
             break;
           default:
             // For "Other UPI" or unspecified, use generic upi:// which will show app chooser on Android
