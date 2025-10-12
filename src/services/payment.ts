@@ -55,6 +55,15 @@ export const createPaymentOrder = async (
         remark: params.remark,
       }),
     });
+    const contentType = response.headers.get('content-type') || '';
+    if (!contentType.includes('application/json')) {
+      const text = await response.text().catch(() => '');
+      console.error('Unexpected non-JSON response from create-order:', text);
+      return {
+        status: 'error',
+        message: `Payment service returned unexpected response: ${response.status} ${response.statusText}`,
+      };
+    }
 
     const data: CreateOrderResponse = await response.json();
     return data;
@@ -79,6 +88,15 @@ export const fetchOrderStatus = async (
       },
       body: JSON.stringify({ orderId }),
     });
+    const contentType = response.headers.get('content-type') || '';
+    if (!contentType.includes('application/json')) {
+      const text = await response.text().catch(() => '');
+      console.error('Unexpected non-JSON response from order-status:', text);
+      return {
+        status: 'error',
+        message: `Payment service returned unexpected response: ${response.status} ${response.statusText}`,
+      };
+    }
 
     const data: OrderStatusResponse = await response.json();
     return data;
