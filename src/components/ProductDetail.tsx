@@ -412,20 +412,13 @@ export function ProductDetail({ product, onBack }: ProductDetailProps) {
     
     // For mobile devices, try to open UPI app directly first
     if (isMobile && upiPaymentString && upiPaymentString.startsWith('upi://')) {
-      // Show alert to user
-      const userConfirmed = window.confirm(
-        '💳 Open Payment App?\n\nThis will open your UPI payment app (PhonePe, Google Pay, Paytm, etc.) to complete the payment.\n\nClick OK to continue or Cancel to scan QR code instead.'
-      );
+      // Directly open UPI app without confirmation
+      window.location.href = upiPaymentString;
       
-      if (userConfirmed) {
-        // Try to open UPI app
-        window.location.href = upiPaymentString;
-        
-        // Show success message after attempting to open
-        setTimeout(() => {
-          setStatusMessage('✅ Opening payment app... If it didn\'t open, please scan the QR code above.');
-        }, 500);
-      }
+      // Show success message after attempting to open
+      setTimeout(() => {
+        setStatusMessage('✅ Opening payment app... If it didn\'t open, please scan the QR code above.');
+      }, 500);
       return;
     }
 
