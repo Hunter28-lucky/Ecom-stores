@@ -1,98 +1,28 @@
 [
   {
     "id": "1",
-    "name": "Premium Wireless Headphones",
-    "price": 2999,
-    "image": "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500",
-    "category": "Audio",
-    "rating": 4.5,
-    "reviews": 128,
-    "description": "Experience premium sound quality with active noise cancellation and 30-hour battery life.",
-    "features": [
-      "Active Noise Cancellation",
-      "30-hour battery life",
-      "Premium sound quality",
-      "Comfortable design"
-    ]
-  },
-  {
-    "id": "2",
-    "name": "Smart Watch Pro",
-    "price": 4999,
-    "image": "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500",
-    "category": "Wearables",
-    "rating": 4.8,
-    "reviews": 256,
-    "description": "Track your fitness goals with advanced health monitoring and GPS functionality.",
-    "features": [
-      "Heart rate monitor",
-      "GPS tracking",
-      "Water resistant",
-      "7-day battery"
-    ]
-  },
-  {
-    "id": "3",
-    "name": "Wireless Earbuds",
+    "name": "Apple AirPods Pro",
     "price": 1000,
     "image": "https://images.unsplash.com/photo-1572569511254-d8f925fe2cbb?w=500",
+    "images": [
+      "https://images.unsplash.com/photo-1572569511254-d8f925fe2cbb?w=500",
+      "https://images.unsplash.com/photo-1606841837239-c5a1a4a07af7?w=500",
+      "https://images.unsplash.com/photo-1610438235354-a6ae5528385c?w=500",
+      "https://images.unsplash.com/photo-1588423771073-b8903fbb85b5?w=500"
+    ],
     "category": "Audio",
-    "rating": 4.3,
-    "reviews": 89,
-    "description": "Compact and powerful earbuds with crystal clear sound and touch controls.",
+    "rating": 4.8,
+    "reviews": 256,
+    "description": "Premium Apple AirPods with active noise cancellation, crystal clear sound, and seamless connectivity. Experience the best wireless audio with long battery life.",
     "features": [
+      "Active Noise Cancellation",
       "Touch controls",
-      "20-hour playtime",
+      "20-hour playtime with case",
       "IPX4 water resistant",
-      "Auto pairing"
-    ]
-  },
-  {
-    "id": "4",
-    "name": "Portable Bluetooth Speaker",
-    "price": 3499,
-    "image": "https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?w=500",
-    "category": "Audio",
-    "rating": 4.6,
-    "reviews": 142,
-    "description": "360° sound with deep bass and 12-hour battery life. Perfect for outdoor adventures.",
-    "features": [
-      "360° surround sound",
-      "12-hour battery",
-      "Waterproof design",
-      "USB-C charging"
-    ]
-  },
-  {
-    "id": "5",
-    "name": "4K Action Camera",
-    "price": 8999,
-    "image": "https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f?w=500",
-    "category": "Cameras",
-    "rating": 4.7,
-    "reviews": 198,
-    "description": "Capture stunning 4K footage with built-in stabilization and waterproof housing.",
-    "features": [
-      "4K 60fps video",
-      "Waterproof to 30m",
-      "Image stabilization",
-      "WiFi connectivity"
-    ]
-  },
-  {
-    "id": "6",
-    "name": "Gaming Mouse RGB",
-    "price": 2499,
-    "image": "https://images.unsplash.com/photo-1527814050087-3793815479db?w=500",
-    "category": "Gaming",
-    "rating": 4.4,
-    "reviews": 167,
-    "description": "Professional gaming mouse with 16000 DPI, programmable buttons, and RGB lighting.",
-    "features": [
-      "16000 DPI sensor",
-      "8 programmable buttons",
-      "RGB lighting",
-      "Ergonomic design"
+      "Auto pairing",
+      "Premium sound quality",
+      "Comfortable design",
+      "Fast charging support"
     ]
   }
 ]
