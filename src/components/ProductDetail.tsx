@@ -704,34 +704,13 @@ export function ProductDetail({ product, onBack }: ProductDetailProps) {
                   <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
                     <QrCode className="w-8 h-8 text-green-600" />
                   </div>
-                  <h3 className="text-xl font-bold text-gray-900 mb-2">Complete Payment</h3>
-                  <p className="text-gray-600 mb-4">Choose your preferred payment method</p>
+                  <h3 className="text-xl font-bold text-gray-900 mb-2">Payment QR Code</h3>
+                  <p className="text-gray-600 mb-4">Scan with any UPI app to complete payment</p>
                 </div>
-
-                {/* Mobile: Direct UPI App Button */}
-                {isMobileDevice() && upiPaymentString && upiPaymentString.startsWith('upi://') && (
-                  <div className="mb-4">
-                    <button
-                      onClick={() => openPaymentLink(true)}
-                      className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 text-white py-4 rounded-xl font-bold text-lg shadow-lg hover:shadow-xl transform hover:scale-[1.02] transition-all flex items-center justify-center gap-2"
-                    >
-                      <ExternalLink className="w-5 h-5" />
-                      Open Payment App
-                    </button>
-                    <p className="text-xs text-center text-gray-500 mt-2">
-                      Opens PhonePe, Google Pay, Paytm, or your default UPI app
-                    </p>
-                    <div className="flex items-center gap-2 my-4">
-                      <div className="flex-1 border-t border-gray-300"></div>
-                      <span className="text-sm text-gray-500 font-medium">OR</span>
-                      <div className="flex-1 border-t border-gray-300"></div>
-                    </div>
-                  </div>
-                )}
 
                 {/* QR Code for all users */}
                 <div className="text-center">
-                  <p className="text-sm font-semibold text-gray-700 mb-3">Scan QR Code to Pay</p>
+                  <p className="text-sm font-semibold text-gray-700 mb-3">Scan to Pay</p>
                   {qrCodeDataUrl && (
                     <div className="bg-white p-4 rounded-xl border-2 border-indigo-200">
                       <img src={qrCodeDataUrl} alt="Payment QR Code" className="w-full max-w-xs mx-auto" />
@@ -849,21 +828,66 @@ export function ProductDetail({ product, onBack }: ProductDetailProps) {
             </div>
             {hasPaymentSuccess ? (
               <div className="space-y-3">
-                <button
-                  onClick={() => openPaymentLink(true)}
-                  disabled={!upiPaymentString && !paymentResult?.payment_url}
-                  className={`w-full bg-gradient-to-r from-green-600 to-emerald-600 text-white py-4 rounded-2xl font-bold text-lg shadow-lg hover:shadow-xl transform transition-all flex items-center justify-center gap-2 ${
-                    upiPaymentString || paymentResult?.payment_url ? 'hover:scale-[1.02]' : 'opacity-60 cursor-not-allowed'
-                  }`}
-                >
-                  <ExternalLink className="w-5 h-5" />
-                  Pay Now
-                </button>
+                {/* Payment App Buttons */}
+                <div className="grid grid-cols-2 gap-3">
+                  <button
+                    onClick={() => openPaymentLink(true)}
+                    disabled={!upiPaymentString && !paymentResult?.payment_url}
+                    className={`bg-gradient-to-r from-purple-700 to-purple-600 text-white py-3 rounded-xl font-bold shadow-lg hover:shadow-xl transform transition-all flex items-center justify-center gap-2 ${
+                      upiPaymentString || paymentResult?.payment_url ? 'hover:scale-[1.02]' : 'opacity-60 cursor-not-allowed'
+                    }`}
+                  >
+                    <svg viewBox="0 0 24 24" className="w-5 h-5" fill="currentColor">
+                      <path d="M13.01 2L4 8.5V22h7v-7h2v7h7V8.5L13.01 2zm4.99 16h-3v-7h-6v7H6V9.5l7-5 7 5V18z"/>
+                    </svg>
+                    PhonePe
+                  </button>
+                  
+                  <button
+                    onClick={() => openPaymentLink(true)}
+                    disabled={!upiPaymentString && !paymentResult?.payment_url}
+                    className={`bg-gradient-to-r from-blue-600 to-blue-500 text-white py-3 rounded-xl font-bold shadow-lg hover:shadow-xl transform transition-all flex items-center justify-center gap-2 ${
+                      upiPaymentString || paymentResult?.payment_url ? 'hover:scale-[1.02]' : 'opacity-60 cursor-not-allowed'
+                    }`}
+                  >
+                    <svg viewBox="0 0 24 24" className="w-5 h-5" fill="currentColor">
+                      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm.31-8.86c-1.77-.45-2.34-.94-2.34-1.67 0-.84.79-1.43 2.1-1.43 1.38 0 1.9.66 1.94 1.64h1.71c-.05-1.34-.87-2.57-2.49-2.97V5H10.9v1.69c-1.51.32-2.72 1.3-2.72 2.81 0 1.79 1.49 2.69 3.66 3.21 1.95.46 2.34 1.15 2.34 1.87 0 .53-.39 1.39-2.1 1.39-1.6 0-2.23-.72-2.32-1.64H8.04c.1 1.7 1.36 2.66 2.86 2.97V19h2.34v-1.67c1.52-.29 2.72-1.16 2.73-2.77-.01-2.2-1.9-2.96-3.66-3.42z"/>
+                    </svg>
+                    GPay
+                  </button>
+                </div>
+                
+                <div className="grid grid-cols-2 gap-3">
+                  <button
+                    onClick={() => openPaymentLink(true)}
+                    disabled={!upiPaymentString && !paymentResult?.payment_url}
+                    className={`bg-gradient-to-r from-cyan-600 to-blue-600 text-white py-3 rounded-xl font-bold shadow-lg hover:shadow-xl transform transition-all flex items-center justify-center gap-2 ${
+                      upiPaymentString || paymentResult?.payment_url ? 'hover:scale-[1.02]' : 'opacity-60 cursor-not-allowed'
+                    }`}
+                  >
+                    <svg viewBox="0 0 24 24" className="w-5 h-5" fill="currentColor">
+                      <path d="M4 4h16v16H4V4m2 2v12h12V6H6m2 2h8v2H8V8m0 4h8v2H8v-2m0 4h5v2H8v-2z"/>
+                    </svg>
+                    Paytm
+                  </button>
+                  
+                  <button
+                    onClick={() => openPaymentLink(true)}
+                    disabled={!upiPaymentString && !paymentResult?.payment_url}
+                    className={`bg-gradient-to-r from-orange-600 to-orange-500 text-white py-3 rounded-xl font-bold shadow-lg hover:shadow-xl transform transition-all flex items-center justify-center gap-2 ${
+                      upiPaymentString || paymentResult?.payment_url ? 'hover:scale-[1.02]' : 'opacity-60 cursor-not-allowed'
+                    }`}
+                  >
+                    <ExternalLink className="w-5 h-5" />
+                    Other UPI
+                  </button>
+                </div>
+                
                 <button
                   onClick={resetCheckoutForm}
-                  className="w-full border border-gray-200 text-gray-700 py-4 rounded-2xl font-bold text-lg flex items-center justify-center gap-2 hover:bg-gray-50 transition-all duration-200 active:scale-95"
+                  className="w-full border-2 border-gray-300 text-gray-700 py-3 rounded-xl font-semibold flex items-center justify-center gap-2 hover:bg-gray-50 transition-all"
                 >
-                  Start a New Order
+                  Start New Order
                 </button>
               </div>
             ) : (
