@@ -6,7 +6,6 @@ import {
   Save,
   X,
   Package,
-  DollarSign,
   Image as ImageIcon,
   Tag,
   Star,
@@ -42,6 +41,8 @@ export function AdminDashboard({ onBack }: AdminDashboardProps) {
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [isAddingNew, setIsAddingNew] = useState(false);
   const [saveMessage, setSaveMessage] = useState('');
+
+  // Re-enable setSaveMessage for success messages
 
   // Load products from the JSON file directly (read-only on production)
   useEffect(() => {
@@ -84,26 +85,57 @@ export function AdminDashboard({ onBack }: AdminDashboardProps) {
   const handleSave = async () => {
     if (!editingProduct) return;
 
-    alert('⚠️ Admin editing is available only in local development.\n\n' +
-          'To edit products on production:\n' +
-          '1. Edit public/products.json locally\n' +
-          '2. Commit and push changes\n' +
-          '3. Changes will auto-deploy to Vercel\n\n' +
-          'Or run "npm run dev:admin" locally for full admin features.');
-    
-    setEditingProduct(null);
-    setIsAddingNew(false);
+    try {
+      const url = isAddingNew
+        ? '/api/products'
+        : `/api/products/${editingProduct.id}`;
+      
+      const method = isAddingNew ? 'POST' : 'PUT';
+
+      const response = await fetch(url, {
+        method,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(editingProduct),
+      });
+
+      const result = await response.json();
+
+      if (result.success) {
+        setSaveMessage('✅ Saved successfully!');
+        setTimeout(() => setSaveMessage(''), 3000);
+        setEditingProduct(null);
+        setIsAddingNew(false);
+        loadProducts();
+      } else {
+        alert('Failed to save: ' + (result.message || 'Unknown error'));
+      }
+    } catch (error) {
+      console.error('Save error:', error);
+      alert('Failed to save product. Please try again.');
+    }
   };
 
   const handleDelete = async (id: string) => {
     if (!window.confirm('Are you sure you want to delete this product?')) return;
 
-    alert('⚠️ Product deletion is available only in local development.\n\n' +
-          'To delete products:\n' +
-          '1. Edit public/products.json locally\n' +
-          '2. Remove the product from the array\n' +
-          '3. Commit and push changes\n\n' +
-          'Or run "npm run dev:admin" locally for full admin features.');
+    try {
+      const response = await fetch(`/api/products/${id}`, { 
+        method: 'DELETE' 
+      });
+      
+      const result = await response.json();
+      
+      if (result.success) {
+        setSaveMessage('✅ Product deleted!');
+        setTimeout(() => setSaveMessage(''), 3000);
+        loadProducts();
+      } else {
+        alert('Failed to delete: ' + (result.message || 'Unknown error'));
+      }
+    } catch (error) {
+      console.error('Delete error:', error);
+      alert('Failed to delete product. Please try again.');
+    }
   };
 
   const handleCancel = () => {
@@ -211,8 +243,7 @@ export function AdminDashboard({ onBack }: AdminDashboardProps) {
               {/* Price */}
               <div>
                 <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  <DollarSign className="w-4 h-4 inline mr-1" />
-                  Price (₹)
+                  ₹ Price (Rupees)
                 </label>
                 <input
                   type="number"
