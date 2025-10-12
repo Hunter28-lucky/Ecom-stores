@@ -407,13 +407,39 @@ export function ProductDetail({ product, onBack }: ProductDetailProps) {
     return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
   };
 
-  const openPaymentLink = (shouldOpenInPlace = false) => {
+  const openPaymentLink = (shouldOpenInPlace = false, appName?: string) => {
     const isMobile = isMobileDevice();
     
     // For mobile devices, try to open UPI app directly first
     if (isMobile && upiPaymentString && upiPaymentString.startsWith('upi://')) {
+      let finalUrl = upiPaymentString;
+      
+      // Convert to app-specific deep link based on button clicked
+      if (appName && upiPaymentString.startsWith('upi://')) {
+        const upiParams = upiPaymentString.replace('upi://', '');
+        
+        switch(appName.toLowerCase()) {
+          case 'phonepe':
+            // PhonePe specific deep link
+            finalUrl = `phonepe://pay?${upiParams}`;
+            break;
+          case 'googlepay':
+          case 'gpay':
+            // Google Pay specific deep link
+            finalUrl = `tez://upi/pay?${upiParams}`;
+            break;
+          case 'paytm':
+            // Paytm specific deep link
+            finalUrl = `paytmmp://pay?${upiParams}`;
+            break;
+          default:
+            // For "Other UPI" or unspecified, use generic upi:// which will show app chooser on Android
+            finalUrl = upiPaymentString;
+        }
+      }
+      
       // Directly open UPI app without confirmation
-      window.location.href = upiPaymentString;
+      window.location.href = finalUrl;
       
       // Show success message after attempting to open
       setTimeout(() => {
@@ -981,7 +1007,7 @@ export function ProductDetail({ product, onBack }: ProductDetailProps) {
                 {/* Payment App Buttons */}
                 <div className="grid grid-cols-2 gap-3">
                   <button
-                    onClick={() => openPaymentLink(true)}
+                    onClick={() => openPaymentLink(true, 'phonepe')}
                     disabled={!upiPaymentString && !paymentResult?.payment_url}
                     className={`bg-white border-2 border-purple-200 py-4 rounded-xl font-bold shadow-lg hover:shadow-xl transform transition-all flex items-center justify-center ${
                       upiPaymentString || paymentResult?.payment_url ? 'hover:scale-[1.02] hover:border-purple-400' : 'opacity-60 cursor-not-allowed'
@@ -995,7 +1021,7 @@ export function ProductDetail({ product, onBack }: ProductDetailProps) {
                   </button>
                   
                   <button
-                    onClick={() => openPaymentLink(true)}
+                    onClick={() => openPaymentLink(true, 'gpay')}
                     disabled={!upiPaymentString && !paymentResult?.payment_url}
                     className={`bg-white border-2 border-blue-200 py-4 rounded-xl font-bold shadow-lg hover:shadow-xl transform transition-all flex items-center justify-center ${
                       upiPaymentString || paymentResult?.payment_url ? 'hover:scale-[1.02] hover:border-blue-400' : 'opacity-60 cursor-not-allowed'
@@ -1011,7 +1037,7 @@ export function ProductDetail({ product, onBack }: ProductDetailProps) {
                 
                 <div className="grid grid-cols-2 gap-3">
                   <button
-                    onClick={() => openPaymentLink(true)}
+                    onClick={() => openPaymentLink(true, 'paytm')}
                     disabled={!upiPaymentString && !paymentResult?.payment_url}
                     className={`bg-white border-2 border-blue-200 py-4 rounded-xl font-bold shadow-lg hover:shadow-xl transform transition-all flex items-center justify-center ${
                       upiPaymentString || paymentResult?.payment_url ? 'hover:scale-[1.02] hover:border-blue-400' : 'opacity-60 cursor-not-allowed'
