@@ -22,15 +22,11 @@
   animation: fadeToWhite 0.4s ease-in-out forwards;
 }
 
-/* Cinematic Apple-style Splash Screen Animations */
-@keyframes scaleIn {
+/* Apple-style Splash Screen Animation - Fast & Smooth like Apple.com */
+@keyframes appleScale {
   0% {
     opacity: 0;
-    transform: scale(0.5);
-  }
-  50% {
-    opacity: 1;
-    transform: scale(1.05);
+    transform: scale(0.92);
   }
   100% {
     opacity: 1;
@@ -38,22 +34,6 @@
   }
 }
 
-@keyframes fadeInUp {
-  0% {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.animate-scaleIn {
-  animation: scaleIn 1.2s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-}
-
-.animate-fadeInUp {
-  animation: fadeInUp 1s ease-out 0.5s forwards;
-  opacity: 0;
+.animate-appleScale {
+  animation: appleScale 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
 }
