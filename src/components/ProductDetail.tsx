@@ -15,6 +15,9 @@ import {
   Timer,
   Sparkles,
   ArrowLeft,
+  Mail,
+  MapPin,
+  Home,
 } from 'lucide-react';
 import QRCode from 'qrcode';
 import {
@@ -37,6 +40,11 @@ export function ProductDetail({ product, onBack }: ProductDetailProps) {
   const [quantity, setQuantity] = useState(1);
   const [customerName, setCustomerName] = useState('');
   const [customerMobile, setCustomerMobile] = useState('');
+  const [customerEmail, setCustomerEmail] = useState('');
+  const [customerAddress, setCustomerAddress] = useState('');
+  const [customerCity, setCustomerCity] = useState('');
+  const [customerState, setCustomerState] = useState('');
+  const [customerPincode, setCustomerPincode] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState('');
   const [paymentResult, setPaymentResult] = useState<CreateOrderResponse | null>(null);
@@ -197,6 +205,11 @@ export function ProductDetail({ product, onBack }: ProductDetailProps) {
     setQuantity(1);
     setCustomerName('');
     setCustomerMobile('');
+    setCustomerEmail('');
+    setCustomerAddress('');
+    setCustomerCity('');
+    setCustomerState('');
+    setCustomerPincode('');
     setPaymentResult(null);
     setCurrentOrderId('');
     setError('');
@@ -211,11 +224,31 @@ export function ProductDetail({ product, onBack }: ProductDetailProps) {
 
   const handlePayment = async () => {
     if (!customerName.trim()) {
-      setError('Please enter your name');
+      setError('Please enter your full name');
       return;
     }
     if (!customerMobile.trim() || customerMobile.length < 10) {
-      setError('Please enter a valid mobile number');
+      setError('Please enter a valid 10-digit mobile number');
+      return;
+    }
+    if (!customerEmail.trim() || !customerEmail.includes('@')) {
+      setError('Please enter a valid email address');
+      return;
+    }
+    if (!customerAddress.trim()) {
+      setError('Please enter your delivery address');
+      return;
+    }
+    if (!customerCity.trim()) {
+      setError('Please enter your city');
+      return;
+    }
+    if (!customerState.trim()) {
+      setError('Please enter your state');
+      return;
+    }
+    if (!customerPincode.trim() || customerPincode.length !== 6) {
+      setError('Please enter a valid 6-digit pincode');
       return;
     }
 
@@ -438,21 +471,23 @@ export function ProductDetail({ product, onBack }: ProductDetailProps) {
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       <User className="w-4 h-4 inline mr-1" />
-                      Full Name
+                      Full Name *
                     </label>
                     <input
                       type="text"
                       value={customerName}
                       onChange={(e) => setCustomerName(e.target.value)}
                       className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                      placeholder="Enter your name"
+                      placeholder="Enter your full name"
+                      autoComplete="name"
+                      required
                     />
                   </div>
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       <Phone className="w-4 h-4 inline mr-1" />
-                      Mobile Number
+                      Mobile Number *
                     </label>
                     <input
                       type="tel"
@@ -461,6 +496,90 @@ export function ProductDetail({ product, onBack }: ProductDetailProps) {
                       className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                       placeholder="10-digit mobile number"
                       maxLength={10}
+                      autoComplete="tel"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <Mail className="w-4 h-4 inline mr-1" />
+                      Email Address *
+                    </label>
+                    <input
+                      type="email"
+                      value={customerEmail}
+                      onChange={(e) => setCustomerEmail(e.target.value)}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                      placeholder="your.email@example.com"
+                      autoComplete="email"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <Home className="w-4 h-4 inline mr-1" />
+                      Delivery Address *
+                    </label>
+                    <textarea
+                      value={customerAddress}
+                      onChange={(e) => setCustomerAddress(e.target.value)}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                      placeholder="House No, Building, Street, Area"
+                      rows={2}
+                      autoComplete="street-address"
+                      required
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <MapPin className="w-4 h-4 inline mr-1" />
+                        City *
+                      </label>
+                      <input
+                        type="text"
+                        value={customerCity}
+                        onChange={(e) => setCustomerCity(e.target.value)}
+                        className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                        placeholder="City"
+                        autoComplete="address-level2"
+                        required
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        State *
+                      </label>
+                      <input
+                        type="text"
+                        value={customerState}
+                        onChange={(e) => setCustomerState(e.target.value)}
+                        className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                        placeholder="State"
+                        autoComplete="address-level1"
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <MapPin className="w-4 h-4 inline mr-1" />
+                      Pincode *
+                    </label>
+                    <input
+                      type="text"
+                      value={customerPincode}
+                      onChange={(e) => setCustomerPincode(e.target.value)}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                      placeholder="6-digit pincode"
+                      maxLength={6}
+                      autoComplete="postal-code"
+                      required
                     />
                   </div>
 
