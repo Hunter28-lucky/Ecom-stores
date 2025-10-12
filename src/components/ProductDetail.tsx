@@ -470,45 +470,6 @@ export function ProductDetail({ product, onBack }: ProductDetailProps) {
               <div className="text-xs text-gray-600 font-medium">Fast Ship</div>
             </div>
           </div>
-
-          {/* Payment Trust Badges */}
-          <div className="bg-gradient-to-r from-slate-50 to-gray-50 rounded-2xl p-4 border border-gray-200 mb-4">
-            <div className="text-center mb-3">
-              <div className="flex items-center justify-center gap-1 text-green-600 font-semibold text-sm mb-1">
-                <Shield className="w-4 h-4" />
-                <span>100% Secure Payments</span>
-              </div>
-              <p className="text-xs text-gray-500">Trusted by 50,000+ customers</p>
-            </div>
-            <div className="grid grid-cols-4 gap-3 items-center justify-items-center">
-              {/* PhonePe */}
-              <div className="bg-white rounded-lg p-2 shadow-sm border border-gray-100 w-full flex items-center justify-center h-12">
-                <svg viewBox="0 0 24 24" className="w-8 h-8" fill="#5f259f">
-                  <path d="M13.01 2L4 8.5V22h7v-7h2v7h7V8.5L13.01 2zm4.99 16h-3v-7h-6v7H6V9.5l7-5 7 5V18z"/>
-                </svg>
-              </div>
-              {/* Google Pay */}
-              <div className="bg-white rounded-lg p-2 shadow-sm border border-gray-100 w-full flex items-center justify-center h-12">
-                <svg viewBox="0 0 48 20" className="w-8 h-8">
-                  <path fill="#5F6368" d="M22.7 13.7h-2.1V3.5h5.4c1.3 0 2.5.5 3.3 1.4.9.8 1.3 2 1.3 3.2 0 1.3-.5 2.4-1.3 3.2-.9.9-2 1.4-3.3 1.4h-3.3v1zm0-8.4v4.6h3.4c.7 0 1.4-.3 1.9-.8.5-.5.8-1.2.8-1.9 0-.7-.3-1.4-.8-1.9-.5-.5-1.2-.8-1.9-.8h-3.4zm13.8 8.6c-1.1 0-2.1-.4-2.9-1.1-.8-.7-1.2-1.7-1.2-2.8s.4-2.1 1.2-2.8c.8-.7 1.8-1.1 2.9-1.1 1.1 0 2.1.4 2.9 1.1.8.7 1.2 1.7 1.2 2.8s-.4 2.1-1.2 2.8c-.8.7-1.8 1.1-2.9 1.1zm0-1.6c.6 0 1.1-.2 1.5-.6.4-.4.6-.9.6-1.5s-.2-1.1-.6-1.5c-.4-.4-.9-.6-1.5-.6s-1.1.2-1.5.6c-.4.4-.6.9-.6 1.5s.2 1.1.6 1.5c.4.4.9.6 1.5.6zm9.9 2.6l-3.3-7.6h2.2l2.2 5.2 2.2-5.2H48l-5.2 11.7h-2.1l1.9-4.1z"/>
-                </svg>
-              </div>
-              {/* Paytm */}
-              <div className="bg-white rounded-lg p-2 shadow-sm border border-gray-100 w-full flex items-center justify-center h-12">
-                <svg viewBox="0 0 24 24" className="w-8 h-8">
-                  <rect fill="#00BAF2" width="24" height="24" rx="4"/>
-                  <path fill="white" d="M7 8h3v8H7zm4 0h3v8h-3zm4 0h3v8h-3z"/>
-                </svg>
-              </div>
-              {/* UPI */}
-              <div className="bg-white rounded-lg p-2 shadow-sm border border-gray-100 w-full flex items-center justify-center h-12">
-                <div className="text-xs font-bold text-orange-600">UPI</div>
-              </div>
-            </div>
-            <div className="text-center mt-3 text-xs text-gray-500">
-              + Amazon Pay, BHIM & more
-            </div>
-          </div>
         </div>
 
         {/* Product Info */}
