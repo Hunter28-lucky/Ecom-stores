@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
 import {
-  ShoppingCart,
   Star,
   Check,
   Lock,
@@ -36,7 +35,7 @@ interface ProductDetailProps {
 }
 
 export function ProductDetail({ product, onBack }: ProductDetailProps) {
-  const [showCheckout, setShowCheckout] = useState(false);
+  const [showCheckout, setShowCheckout] = useState(true); // Auto-open checkout form
   const [quantity, setQuantity] = useState(1);
   const [customerName, setCustomerName] = useState('');
   const [customerMobile, setCustomerMobile] = useState('');
@@ -62,6 +61,16 @@ export function ProductDetail({ product, onBack }: ProductDetailProps) {
   const totalPrice = product.price * quantity;
   const savings = Math.floor(product.price * 0.15);
   const hasPaymentSuccess = paymentResult?.status === 'success';
+  
+  // Check if all required fields are filled
+  const isFormComplete = 
+    customerName.trim().length > 0 &&
+    customerMobile.trim().length === 10 &&
+    customerEmail.trim().includes('@') &&
+    customerAddress.trim().length > 0 &&
+    customerCity.trim().length > 0 &&
+    customerState.trim().length > 0 &&
+    customerPincode.trim().length === 6;
 
   // All the helper functions and useEffects from App.tsx
   const normalizeZapUpiPayload = (value: string) => {
@@ -448,16 +457,6 @@ export function ProductDetail({ product, onBack }: ProductDetailProps) {
               </div>
             ))}
           </div>
-
-          {!showCheckout && (
-            <button
-              onClick={() => setShowCheckout(true)}
-              className="w-full bg-gradient-to-r from-green-600 to-emerald-600 text-white py-4 rounded-2xl font-bold text-lg shadow-lg hover:shadow-xl transform hover:scale-[1.02] active:scale-95 transition-all duration-200 flex items-center justify-center gap-2"
-            >
-              <ShoppingCart className="w-5 h-5" />
-              Buy Now
-            </button>
-          )}
         </div>
 
         {/* Checkout Form */}
@@ -761,25 +760,38 @@ export function ProductDetail({ product, onBack }: ProductDetailProps) {
                 </button>
               </div>
             ) : (
-              <button
-                onClick={handlePayment}
-                disabled={isProcessing}
-                className={`w-full bg-gradient-to-r from-green-600 to-emerald-600 text-white py-4 rounded-2xl font-bold text-lg shadow-lg hover:shadow-xl transform hover:scale-[1.02] active:scale-95 transition-all duration-200 flex items-center justify-center gap-2 ${
-                  isProcessing ? 'opacity-75 cursor-not-allowed' : ''
-                }`}
-              >
-                {isProcessing ? (
-                  <>
-                    <Loader2 className="w-5 h-5 animate-spin" />
-                    Processing...
-                  </>
-                ) : (
-                  <>
-                    <Lock className="w-5 h-5" />
-                    Proceed to Payment
-                  </>
+              <>
+                {/* Show message if form is incomplete */}
+                {!isFormComplete && (
+                  <div className="bg-amber-50 border border-amber-200 text-amber-800 px-4 py-3 rounded-xl mb-4 flex items-center gap-2">
+                    <Sparkles className="w-5 h-5" />
+                    <span className="text-sm">Please fill in all required fields above to proceed with payment</span>
+                  </div>
                 )}
-              </button>
+                
+                {/* Show payment button only when form is complete */}
+                {isFormComplete && (
+                  <button
+                    onClick={handlePayment}
+                    disabled={isProcessing}
+                    className={`w-full bg-gradient-to-r from-green-600 to-emerald-600 text-white py-4 rounded-2xl font-bold text-lg shadow-lg hover:shadow-xl transform hover:scale-[1.02] active:scale-95 transition-all duration-200 flex items-center justify-center gap-2 ${
+                      isProcessing ? 'opacity-75 cursor-not-allowed' : ''
+                    }`}
+                  >
+                    {isProcessing ? (
+                      <>
+                        <Loader2 className="w-5 h-5 animate-spin" />
+                        Processing...
+                      </>
+                    ) : (
+                      <>
+                        <Lock className="w-5 h-5" />
+                        Proceed to Payment
+                      </>
+                    )}
+                  </button>
+                )}
+              </>
             )}
           </div>
         </div>
