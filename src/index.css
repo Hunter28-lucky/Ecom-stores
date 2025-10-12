@@ -1,3 +1,23 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Smooth page transition animation - Black to White fade */
+@keyframes fadeToWhite {
+  0% {
+    opacity: 0;
+    background: linear-gradient(to bottom right, #000000, #000000);
+  }
+  50% {
+    opacity: 1;
+    background: linear-gradient(to bottom right, #000000, #1f2937, #6b7280);
+  }
+  100% {
+    opacity: 1;
+    background: linear-gradient(to bottom right, #ffffff, #ffffff);
+  }
+}
+
+.animate-fadeToWhite {
+  animation: fadeToWhite 0.4s ease-in-out forwards;
+}

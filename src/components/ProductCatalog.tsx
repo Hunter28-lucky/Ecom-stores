@@ -10,6 +10,16 @@ export function ProductCatalog() {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [showAdmin, setShowAdmin] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isTransitioning, setIsTransitioning] = useState(false);
+
+  const handleProductClick = (product: Product) => {
+    setIsTransitioning(true);
+    // Smooth fade transition before showing product page
+    setTimeout(() => {
+      setSelectedProduct(product);
+      setIsTransitioning(false);
+    }, 300); // 300ms transition
+  };
 
   // Check if user is authenticated from sessionStorage
   useEffect(() => {
@@ -108,7 +118,7 @@ export function ProductCatalog() {
             <div
               key={product.id}
               className="group relative bg-gradient-to-br from-zinc-900 to-black rounded-3xl overflow-hidden cursor-pointer border border-white/10 hover:border-purple-500/50 transition-all duration-500 hover:scale-[1.02] hover:shadow-2xl hover:shadow-purple-500/20"
-              onClick={() => setSelectedProduct(product)}
+              onClick={() => handleProductClick(product)}
             >
               {/* Glow Effect */}
               <div className="absolute inset-0 bg-gradient-to-br from-purple-600/10 via-pink-600/10 to-red-600/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
@@ -184,6 +194,11 @@ export function ProductCatalog() {
           </div>
         </div>
       </footer>
+
+      {/* Smooth Transition Overlay - Black to White Fade */}
+      {isTransitioning && (
+        <div className="fixed inset-0 z-[100] bg-gradient-to-br from-black via-gray-900 to-white animate-fadeToWhite pointer-events-none" />
+      )}
     </div>
   );
 }
