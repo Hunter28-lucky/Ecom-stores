@@ -43,20 +43,19 @@ export function AdminDashboard({ onBack }: AdminDashboardProps) {
   const [isAddingNew, setIsAddingNew] = useState(false);
   const [saveMessage, setSaveMessage] = useState('');
 
-  const API_URL = 'http://localhost:3001/api/products';
-
+  // Load products from the JSON file directly (read-only on production)
   useEffect(() => {
     loadProducts();
   }, []);
 
   const loadProducts = async () => {
     try {
-      const response = await fetch(API_URL);
+      const response = await fetch('/products.json');
       const data = await response.json();
       setProducts(data);
     } catch (error) {
       console.error('Failed to load products:', error);
-      alert('Failed to load products. Make sure the admin API server is running.');
+      alert('Failed to load products from JSON file.');
     } finally {
       setLoading(false);
     }
@@ -85,44 +84,26 @@ export function AdminDashboard({ onBack }: AdminDashboardProps) {
   const handleSave = async () => {
     if (!editingProduct) return;
 
-    try {
-      const url = isAddingNew
-        ? API_URL
-        : `${API_URL}/${editingProduct.id}`;
-      
-      const method = isAddingNew ? 'POST' : 'PUT';
-
-      const response = await fetch(url, {
-        method,
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(editingProduct),
-      });
-
-      const result = await response.json();
-
-      if (result.success) {
-        setSaveMessage('✅ Saved successfully!');
-        setTimeout(() => setSaveMessage(''), 3000);
-        setEditingProduct(null);
-        setIsAddingNew(false);
-        loadProducts();
-      }
-    } catch (error) {
-      alert('Failed to save product');
-    }
+    alert('⚠️ Admin editing is available only in local development.\n\n' +
+          'To edit products on production:\n' +
+          '1. Edit public/products.json locally\n' +
+          '2. Commit and push changes\n' +
+          '3. Changes will auto-deploy to Vercel\n\n' +
+          'Or run "npm run dev:admin" locally for full admin features.');
+    
+    setEditingProduct(null);
+    setIsAddingNew(false);
   };
 
   const handleDelete = async (id: string) => {
     if (!window.confirm('Are you sure you want to delete this product?')) return;
 
-    try {
-      await fetch(`${API_URL}/${id}`, { method: 'DELETE' });
-      setSaveMessage('✅ Product deleted!');
-      setTimeout(() => setSaveMessage(''), 3000);
-      loadProducts();
-    } catch (error) {
-      alert('Failed to delete product');
-    }
+    alert('⚠️ Product deletion is available only in local development.\n\n' +
+          'To delete products:\n' +
+          '1. Edit public/products.json locally\n' +
+          '2. Remove the product from the array\n' +
+          '3. Commit and push changes\n\n' +
+          'Or run "npm run dev:admin" locally for full admin features.');
   };
 
   const handleCancel = () => {

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { ShoppingCart, Star, Settings } from 'lucide-react';
+import { ShoppingCart, Star } from 'lucide-react';
 import { useProducts, type Product } from '../hooks/useProducts';
 import { ProductDetail } from './ProductDetail';
 import { AdminDashboard } from './AdminDashboard';
@@ -88,16 +88,6 @@ export function ProductCatalog() {
             </div>
             <div className="flex items-center space-x-4">
               <span className="text-sm text-gray-600">{products.length} Products</span>
-              <button
-                onClick={() => {
-                  setShowAdmin(true);
-                  window.history.pushState({}, '', '/admin');
-                }}
-                className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition font-semibold"
-              >
-                <Settings className="w-4 h-4" />
-                Admin
-              </button>
             </div>
           </div>
         </div>
