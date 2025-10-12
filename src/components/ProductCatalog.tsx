@@ -4,6 +4,7 @@ import { useProducts, type Product } from '../hooks/useProducts';
 import { ProductDetail } from './ProductDetail';
 import { AdminDashboard } from './AdminDashboard';
 import { AdminLogin } from './AdminLogin';
+import { SplashScreen } from './SplashScreen';
 
 export function ProductCatalog() {
   const { products, loading, error } = useProducts();
@@ -11,6 +12,16 @@ export function ProductCatalog() {
   const [showAdmin, setShowAdmin] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
+  const [showSplash, setShowSplash] = useState(false);
+
+  // Check if user is visiting for the first time in this session
+  useEffect(() => {
+    const hasSeenSplash = sessionStorage.getItem('hasSeenSplash');
+    if (!hasSeenSplash) {
+      setShowSplash(true);
+      sessionStorage.setItem('hasSeenSplash', 'true');
+    }
+  }, []);
 
   const handleProductClick = (product: Product) => {
     setIsTransitioning(true);
@@ -36,6 +47,11 @@ export function ProductCatalog() {
       setShowAdmin(true);
     }
   }, []);
+
+  // Show cinematic splash screen first
+  if (showSplash) {
+    return <SplashScreen onComplete={() => setShowSplash(false)} />;
+  }
 
   if (loading) {
     return (
