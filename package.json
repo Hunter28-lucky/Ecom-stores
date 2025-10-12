@@ -10,7 +10,9 @@
     "preview": "vite preview",
     "typecheck": "tsc --noEmit -p tsconfig.app.json",
     "server": "node server/index.mjs",
-    "dev:full": "concurrently \"npm run server\" \"npm run dev\""
+    "admin-api": "node server/admin-api.mjs",
+    "dev:full": "concurrently \"npm run server\" \"npm run dev\"",
+    "dev:admin": "concurrently \"npm run admin-api\" \"npm run dev\""
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.57.4",

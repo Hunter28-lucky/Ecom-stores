@@ -1,11 +1,13 @@
 import { useState } from 'react';
-import { ShoppingCart, Star } from 'lucide-react';
+import { ShoppingCart, Star, Settings } from 'lucide-react';
 import { useProducts, type Product } from '../hooks/useProducts';
 import { ProductDetail } from './ProductDetail';
+import { AdminDashboard } from './AdminDashboard';
 
 export function ProductCatalog() {
   const { products, loading, error } = useProducts();
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [showAdmin, setShowAdmin] = useState(false);
 
   if (loading) {
     return (
@@ -28,6 +30,10 @@ export function ProductCatalog() {
         </div>
       </div>
     );
+  }
+
+  if (showAdmin) {
+    return <AdminDashboard onBack={() => setShowAdmin(false)} />;
   }
 
   if (selectedProduct) {
@@ -53,6 +59,13 @@ export function ProductCatalog() {
             </div>
             <div className="flex items-center space-x-4">
               <span className="text-sm text-gray-600">{products.length} Products</span>
+              <button
+                onClick={() => setShowAdmin(true)}
+                className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition font-semibold"
+              >
+                <Settings className="w-4 h-4" />
+                Admin
+              </button>
             </div>
           </div>
         </div>
