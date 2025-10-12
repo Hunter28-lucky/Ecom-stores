@@ -33,6 +33,10 @@ interface AdminDashboardProps {
 }
 
 export function AdminDashboard({ onBack }: AdminDashboardProps) {
+  const handleLogout = () => {
+    sessionStorage.removeItem('adminAuthenticated');
+    window.location.href = '/';
+  };
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
@@ -172,6 +176,12 @@ export function AdminDashboard({ onBack }: AdminDashboardProps) {
               {saveMessage && (
                 <span className="text-green-600 font-semibold">{saveMessage}</span>
               )}
+              <button
+                onClick={handleLogout}
+                className="flex items-center gap-2 px-4 py-2 bg-red-100 hover:bg-red-200 text-red-700 rounded-lg font-semibold transition"
+              >
+                🔒 Logout
+              </button>
               <button
                 onClick={onBack}
                 className="flex items-center gap-2 px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded-lg font-semibold transition"

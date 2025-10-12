@@ -23,6 +23,7 @@ This will start:
 - Mobile responsive design
 
 ### ✅ Admin Dashboard (`/admin` button in header)
+- **🔒 Password Protected** - Secure access with password: `12345`
 - **Add Products** - Upload new products with images, price, features
 - **Edit Products** - Update any product information
 - **Delete Products** - Remove products from store
@@ -41,7 +42,11 @@ npm run dev:admin
 ### 2. Access Admin Panel
 1. Open `http://localhost:5173` in browser
 2. Click **"Admin"** button in top-right corner
-3. You're in! 🎉
+3. **Enter password**: `12345`
+4. Click **"Access Admin Panel"**
+5. You're in! 🎉
+
+**🔒 Note**: Only users with the password can access admin panel!
 
 ### 3. Add a Product
 1. Click **"+ Add Product"** button

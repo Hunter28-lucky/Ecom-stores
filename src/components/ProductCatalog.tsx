@@ -1,13 +1,31 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ShoppingCart, Star, Settings } from 'lucide-react';
 import { useProducts, type Product } from '../hooks/useProducts';
 import { ProductDetail } from './ProductDetail';
 import { AdminDashboard } from './AdminDashboard';
+import { AdminLogin } from './AdminLogin';
 
 export function ProductCatalog() {
   const { products, loading, error } = useProducts();
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [showAdmin, setShowAdmin] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  // Check if user is authenticated from sessionStorage
+  useEffect(() => {
+    const auth = sessionStorage.getItem('adminAuthenticated');
+    if (auth === 'true') {
+      setIsAuthenticated(true);
+    }
+  }, []);
+
+  // Check URL for /admin path
+  useEffect(() => {
+    const path = window.location.pathname;
+    if (path === '/admin' || path === '/admin/') {
+      setShowAdmin(true);
+    }
+  }, []);
 
   if (loading) {
     return (
@@ -32,8 +50,19 @@ export function ProductCatalog() {
     );
   }
 
+  // Handle admin access
   if (showAdmin) {
-    return <AdminDashboard onBack={() => setShowAdmin(false)} />;
+    if (!isAuthenticated) {
+      return <AdminLogin onLogin={() => setIsAuthenticated(true)} />;
+    }
+    return (
+      <AdminDashboard
+        onBack={() => {
+          setShowAdmin(false);
+          window.history.pushState({}, '', '/');
+        }}
+      />
+    );
   }
 
   if (selectedProduct) {
@@ -60,7 +89,10 @@ export function ProductCatalog() {
             <div className="flex items-center space-x-4">
               <span className="text-sm text-gray-600">{products.length} Products</span>
               <button
-                onClick={() => setShowAdmin(true)}
+                onClick={() => {
+                  setShowAdmin(true);
+                  window.history.pushState({}, '', '/admin');
+                }}
                 className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition font-semibold"
               >
                 <Settings className="w-4 h-4" />
