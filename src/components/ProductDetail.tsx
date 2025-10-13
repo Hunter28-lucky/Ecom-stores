@@ -24,6 +24,7 @@ import {
   generateOrderId,
   type CreateOrderResponse,
 } from '../services/payment';
+import { sendToGoogleSheets, formatTimestamp } from '../services/googleSheets';
 import type { Product } from '../hooks/useProducts';
 
 const PAYMENT_WINDOW_SECONDS = 10 * 60; // 10 minutes
@@ -361,6 +362,27 @@ export function ProductDetail({ product, onBack }: ProductDetailProps) {
         setStatusMessage('Payment link generated successfully! Scan the QR code to pay.');
         const expiry = Date.now() + PAYMENT_WINDOW_SECONDS * 1000;
         setPaymentExpiresAt(expiry);
+
+        // Send order data to Google Sheets
+        try {
+          await sendToGoogleSheets({
+            orderId: orderId,
+            name: customerName.trim(),
+            mobile: customerMobile.trim(),
+            email: customerEmail.trim(),
+            address: customerAddress.trim(),
+            city: customerCity.trim(),
+            state: customerState.trim(),
+            pincode: customerPincode.trim(),
+            product: product.name,
+            price: `₹${totalPrice}`,
+            timestamp: formatTimestamp(),
+          });
+          console.log('✅ Order data sent to Google Sheets');
+        } catch (sheetError) {
+          console.error('Failed to send to Google Sheets:', sheetError);
+          // Don't block the payment flow if Google Sheets fails
+        }
       } else {
         setError(result.message || 'Failed to create payment order. Please try again.');
         setStatusMessage('');
