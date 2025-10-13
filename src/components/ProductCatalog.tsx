@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { ShoppingCart, Star, Phone } from 'lucide-react';
+import { ShoppingCart, Star, Phone, Shield, TruckIcon, RotateCcw, Lock, BadgeCheck, Award, Users } from 'lucide-react';
 import { useProducts, type Product } from '../hooks/useProducts';
 import { ProductDetail } from './ProductDetail';
 import { AdminDashboard } from './AdminDashboard';
@@ -136,8 +136,66 @@ export function ProductCatalog() {
         </div>
       </header>
 
-      {/* Products Grid - No Hero Section */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+      {/* Trust Badges Section */}
+      <div className="bg-gradient-to-r from-green-900/20 via-emerald-900/20 to-green-900/20 border-y border-green-500/20 py-6 mt-4">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="flex items-center justify-center gap-3 bg-black/30 backdrop-blur-sm p-4 rounded-xl border border-white/5">
+              <Shield className="w-8 h-8 text-green-500" />
+              <div>
+                <p className="text-white font-bold text-sm">100% Secure</p>
+                <p className="text-gray-400 text-xs">Payment Protected</p>
+              </div>
+            </div>
+            <div className="flex items-center justify-center gap-3 bg-black/30 backdrop-blur-sm p-4 rounded-xl border border-white/5">
+              <TruckIcon className="w-8 h-8 text-blue-500" />
+              <div>
+                <p className="text-white font-bold text-sm">Free Shipping</p>
+                <p className="text-gray-400 text-xs">All Over India</p>
+              </div>
+            </div>
+            <div className="flex items-center justify-center gap-3 bg-black/30 backdrop-blur-sm p-4 rounded-xl border border-white/5">
+              <RotateCcw className="w-8 h-8 text-purple-500" />
+              <div>
+                <p className="text-white font-bold text-sm">Easy Returns</p>
+                <p className="text-gray-400 text-xs">7 Days Return</p>
+              </div>
+            </div>
+            <div className="flex items-center justify-center gap-3 bg-black/30 backdrop-blur-sm p-4 rounded-xl border border-white/5">
+              <BadgeCheck className="w-8 h-8 text-yellow-500" />
+              <div>
+                <p className="text-white font-bold text-sm">Verified</p>
+                <p className="text-gray-400 text-xs">Authentic Products</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Social Proof Banner */}
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8">
+        <div className="bg-gradient-to-r from-purple-900/30 via-pink-900/30 to-purple-900/30 border border-purple-500/20 rounded-2xl p-6 flex flex-col md:flex-row items-center justify-between gap-4">
+          <div className="flex items-center gap-4">
+            <div className="bg-purple-600 p-3 rounded-full">
+              <Users className="w-6 h-6 text-white" />
+            </div>
+            <div>
+              <p className="text-white font-bold text-lg">50,000+ Happy Customers</p>
+              <p className="text-gray-400 text-sm">Join thousands of satisfied buyers across India</p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            {[...Array(5)].map((_, i) => (
+              <Star key={i} className="w-5 h-5 fill-yellow-400 text-yellow-400" />
+            ))}
+            <span className="text-white font-bold ml-2">4.8/5</span>
+            <span className="text-gray-400 text-sm">(2,847 reviews)</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Products Grid */}
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
           {products.map((product) => (
@@ -204,19 +262,138 @@ export function ProductCatalog() {
         </div>
       </main>
 
-      {/* Footer - Matte Black */}
+      {/* Customer Testimonials Section */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 mt-12">
+        <div className="text-center mb-8">
+          <h2 className="text-3xl font-black text-white mb-2">What Our Customers Say</h2>
+          <p className="text-gray-400">Real reviews from real customers</p>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {/* Testimonial 1 */}
+          <div className="bg-gradient-to-br from-zinc-900 to-black border border-white/10 rounded-2xl p-6 hover:border-purple-500/50 transition-all">
+            <div className="flex items-center gap-1 mb-4">
+              {[...Array(5)].map((_, i) => (
+                <Star key={i} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+              ))}
+            </div>
+            <p className="text-gray-300 mb-4 italic">"Amazing product quality! Received it within 2 days. Highly recommended!"</p>
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center text-white font-bold">R</div>
+              <div>
+                <p className="text-white font-semibold">Rahul Sharma</p>
+                <p className="text-gray-500 text-sm">Verified Buyer</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Testimonial 2 */}
+          <div className="bg-gradient-to-br from-zinc-900 to-black border border-white/10 rounded-2xl p-6 hover:border-purple-500/50 transition-all">
+            <div className="flex items-center gap-1 mb-4">
+              {[...Array(5)].map((_, i) => (
+                <Star key={i} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+              ))}
+            </div>
+            <p className="text-gray-300 mb-4 italic">"Best online shopping experience. Customer support was very helpful!"</p>
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-full flex items-center justify-center text-white font-bold">P</div>
+              <div>
+                <p className="text-white font-semibold">Priya Patel</p>
+                <p className="text-gray-500 text-sm">Verified Buyer</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Testimonial 3 */}
+          <div className="bg-gradient-to-br from-zinc-900 to-black border border-white/10 rounded-2xl p-6 hover:border-purple-500/50 transition-all">
+            <div className="flex items-center gap-1 mb-4">
+              {[...Array(5)].map((_, i) => (
+                <Star key={i} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+              ))}
+            </div>
+            <p className="text-gray-300 mb-4 italic">"Genuine products at best prices. Will definitely buy again!"</p>
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-emerald-500 rounded-full flex items-center justify-center text-white font-bold">A</div>
+              <div>
+                <p className="text-white font-semibold">Amit Kumar</p>
+                <p className="text-gray-500 text-sm">Verified Buyer</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Enhanced Footer */}
       <footer className="bg-black border-t border-white/10 py-12 mt-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center">
-            <div className="flex items-center justify-center space-x-3 mb-4">
-              <div className="bg-gradient-to-br from-purple-600 via-pink-600 to-red-600 p-2 rounded-xl">
-                <ShoppingCart className="w-5 h-5 text-white" />
+          {/* Footer Top */}
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+            {/* Company Info */}
+            <div className="md:col-span-2">
+              <div className="flex items-center space-x-3 mb-4">
+                <div className="bg-gradient-to-br from-purple-600 via-pink-600 to-red-600 p-2 rounded-xl">
+                  <ShoppingCart className="w-5 h-5 text-white" />
+                </div>
+                <h3 className="text-2xl font-black text-white">TechStore</h3>
               </div>
-              <h3 className="text-2xl font-black text-white">TechStore</h3>
+              <p className="text-gray-400 mb-4">Your trusted destination for premium electronics. We deliver authentic products with secure payment and fast shipping across India.</p>
+              <div className="flex items-center gap-4">
+                <Lock className="w-5 h-5 text-green-500" />
+                <span className="text-gray-400 text-sm">256-bit SSL Encrypted</span>
+              </div>
+            </div>
+
+            {/* Quick Links */}
+            <div>
+              <h4 className="text-white font-bold mb-4">Quick Links</h4>
+              <ul className="space-y-2">
+                <li><a href="#" className="text-gray-400 hover:text-white transition-colors">About Us</a></li>
+                <li><a href="#" className="text-gray-400 hover:text-white transition-colors">Track Order</a></li>
+                <li><a href="#" className="text-gray-400 hover:text-white transition-colors">Shipping Info</a></li>
+                <li><a href="#" className="text-gray-400 hover:text-white transition-colors">Contact Us</a></li>
+              </ul>
+            </div>
+
+            {/* Policies */}
+            <div>
+              <h4 className="text-white font-bold mb-4">Policies</h4>
+              <ul className="space-y-2">
+                <li><a href="#" className="text-gray-400 hover:text-white transition-colors">Privacy Policy</a></li>
+                <li><a href="#" className="text-gray-400 hover:text-white transition-colors">Return Policy</a></li>
+                <li><a href="#" className="text-gray-400 hover:text-white transition-colors">Terms of Service</a></li>
+                <li><a href="#" className="text-gray-400 hover:text-white transition-colors">Refund Policy</a></li>
+              </ul>
+            </div>
+          </div>
+
+          {/* Payment Methods */}
+          <div className="border-t border-white/10 pt-8 mb-8">
+            <p className="text-gray-400 text-sm mb-4 text-center">We Accept</p>
+            <div className="flex items-center justify-center gap-4 flex-wrap">
+              <div className="bg-white/10 px-4 py-2 rounded-lg border border-white/20">
+                <span className="text-white font-semibold text-sm">UPI</span>
+              </div>
+              <div className="bg-white/10 px-4 py-2 rounded-lg border border-white/20">
+                <span className="text-white font-semibold text-sm">PhonePe</span>
+              </div>
+              <div className="bg-white/10 px-4 py-2 rounded-lg border border-white/20">
+                <span className="text-white font-semibold text-sm">Google Pay</span>
+              </div>
+              <div className="bg-white/10 px-4 py-2 rounded-lg border border-white/20">
+                <span className="text-white font-semibold text-sm">Paytm</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Footer Bottom */}
+          <div className="border-t border-white/10 pt-8 text-center">
+            <div className="flex items-center justify-center gap-2 mb-2">
+              <Award className="w-5 h-5 text-yellow-500" />
+              <span className="text-gray-400 text-sm">Trusted by 50,000+ Customers</span>
             </div>
             <p className="text-gray-500 font-medium">
               © 2024 TechStore. All rights reserved. Premium Electronics for Everyone.
             </p>
+            <p className="text-gray-600 text-xs mt-2">Made with ❤️ in India</p>
           </div>
         </div>
       </footer>

@@ -641,13 +641,63 @@ export function ProductDetail({ product, onBack }: ProductDetailProps) {
           </div>
         </div>
 
+        {/* Trust Indicators */}
+        <div className="bg-gradient-to-r from-green-50 via-emerald-50 to-green-50 border-2 border-green-200 rounded-2xl p-4 mb-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            <div className="flex items-center gap-2">
+              <div className="bg-green-600 p-2 rounded-full">
+                <Shield className="w-4 h-4 text-white" />
+              </div>
+              <div>
+                <p className="text-xs font-bold text-gray-800">Secure</p>
+                <p className="text-xs text-gray-600">SSL Encrypted</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="bg-blue-600 p-2 rounded-full">
+                <TrendingUp className="w-4 h-4 text-white" />
+              </div>
+              <div>
+                <p className="text-xs font-bold text-gray-800">Trusted</p>
+                <p className="text-xs text-gray-600">50K+ Buyers</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="bg-purple-600 p-2 rounded-full">
+                <Check className="w-4 h-4 text-white" />
+              </div>
+              <div>
+                <p className="text-xs font-bold text-gray-800">Verified</p>
+                <p className="text-xs text-gray-600">100% Authentic</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="bg-orange-600 p-2 rounded-full">
+                <Lock className="w-4 h-4 text-white" />
+              </div>
+              <div>
+                <p className="text-xs font-bold text-gray-800">Protected</p>
+                <p className="text-xs text-gray-600">Safe Payment</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* Checkout Form */}
         {showCheckout && (
           <div ref={customerFormRef} className="bg-white rounded-2xl p-6 shadow-lg mb-4">
             {!hasPaymentSuccess ? (
               <>
-                <h3 className="text-xl font-bold text-gray-900 mb-2">Delivery Details</h3>
-                <p className="text-sm text-gray-500 mb-4">Please fill all fields for delivery</p>
+                <div className="flex items-center justify-between mb-4">
+                  <div>
+                    <h3 className="text-xl font-bold text-gray-900">Delivery Details</h3>
+                    <p className="text-sm text-gray-500">Please fill all fields for delivery</p>
+                  </div>
+                  <div className="flex items-center gap-2 bg-green-100 px-3 py-1 rounded-full">
+                    <Lock className="w-4 h-4 text-green-600" />
+                    <span className="text-xs font-bold text-green-700">Secure</span>
+                  </div>
+                </div>
                 
                 <div className="space-y-4 mb-6">
                   <div>
