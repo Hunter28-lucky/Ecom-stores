@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { ShoppingCart, Star, Phone, Shield, TruckIcon, RotateCcw, Lock, BadgeCheck, Award, Users } from 'lucide-react';
+import { ShoppingCart, Star, Phone, Lock, Award } from 'lucide-react';
 import { useProducts, type Product } from '../hooks/useProducts';
 import { ProductDetail } from './ProductDetail';
 import { AdminDashboard } from './AdminDashboard';
@@ -136,66 +136,8 @@ export function ProductCatalog() {
         </div>
       </header>
 
-      {/* Trust Badges Section */}
-      <div className="bg-gradient-to-r from-green-900/20 via-emerald-900/20 to-green-900/20 border-y border-green-500/20 py-6 mt-4">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div className="flex items-center justify-center gap-3 bg-black/30 backdrop-blur-sm p-4 rounded-xl border border-white/5">
-              <Shield className="w-8 h-8 text-green-500" />
-              <div>
-                <p className="text-white font-bold text-sm">100% Secure</p>
-                <p className="text-gray-400 text-xs">Payment Protected</p>
-              </div>
-            </div>
-            <div className="flex items-center justify-center gap-3 bg-black/30 backdrop-blur-sm p-4 rounded-xl border border-white/5">
-              <TruckIcon className="w-8 h-8 text-blue-500" />
-              <div>
-                <p className="text-white font-bold text-sm">Free Shipping</p>
-                <p className="text-gray-400 text-xs">All Over India</p>
-              </div>
-            </div>
-            <div className="flex items-center justify-center gap-3 bg-black/30 backdrop-blur-sm p-4 rounded-xl border border-white/5">
-              <RotateCcw className="w-8 h-8 text-purple-500" />
-              <div>
-                <p className="text-white font-bold text-sm">Easy Returns</p>
-                <p className="text-gray-400 text-xs">7 Days Return</p>
-              </div>
-            </div>
-            <div className="flex items-center justify-center gap-3 bg-black/30 backdrop-blur-sm p-4 rounded-xl border border-white/5">
-              <BadgeCheck className="w-8 h-8 text-yellow-500" />
-              <div>
-                <p className="text-white font-bold text-sm">Verified</p>
-                <p className="text-gray-400 text-xs">Authentic Products</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Social Proof Banner */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8">
-        <div className="bg-gradient-to-r from-purple-900/30 via-pink-900/30 to-purple-900/30 border border-purple-500/20 rounded-2xl p-6 flex flex-col md:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-4">
-            <div className="bg-purple-600 p-3 rounded-full">
-              <Users className="w-6 h-6 text-white" />
-            </div>
-            <div>
-              <p className="text-white font-bold text-lg">50,000+ Happy Customers</p>
-              <p className="text-gray-400 text-sm">Join thousands of satisfied buyers across India</p>
-            </div>
-          </div>
-          <div className="flex items-center gap-2">
-            {[...Array(5)].map((_, i) => (
-              <Star key={i} className="w-5 h-5 fill-yellow-400 text-yellow-400" />
-            ))}
-            <span className="text-white font-bold ml-2">4.8/5</span>
-            <span className="text-gray-400 text-sm">(2,847 reviews)</span>
-          </div>
-        </div>
-      </div>
-
       {/* Products Grid */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
           {products.map((product) => (
