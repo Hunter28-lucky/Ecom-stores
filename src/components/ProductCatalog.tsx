@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { ShoppingCart, Star } from 'lucide-react';
+import { ShoppingCart, Star, Phone } from 'lucide-react';
 import { useProducts, type Product } from '../hooks/useProducts';
 import { ProductDetail } from './ProductDetail';
 import { AdminDashboard } from './AdminDashboard';
@@ -13,6 +13,7 @@ export function ProductCatalog() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [showSplash, setShowSplash] = useState(false);
+  const [showContactModal, setShowContactModal] = useState(false);
 
   // Check if user is visiting for the first time in this session
   useEffect(() => {
@@ -118,9 +119,18 @@ export function ProductCatalog() {
                 <p className="text-xs text-gray-500 font-medium tracking-wider uppercase">Premium Electronics</p>
               </div>
             </div>
-            <div className="hidden sm:flex items-center space-x-2 bg-white/5 px-4 py-2 rounded-xl border border-white/10">
-              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-              <span className="text-sm text-gray-400 font-medium">{products.length} Products Available</span>
+            <div className="hidden sm:flex items-center space-x-4">
+              <div className="flex items-center space-x-2 bg-white/5 px-4 py-2 rounded-xl border border-white/10">
+                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                <span className="text-sm text-gray-400 font-medium">{products.length} Products Available</span>
+              </div>
+              <button
+                onClick={() => setShowContactModal(true)}
+                className="flex items-center gap-2 bg-gradient-to-r from-orange-600 to-orange-500 text-white px-4 py-2 rounded-xl font-bold shadow-lg hover:shadow-xl transform hover:scale-105 transition-all"
+              >
+                <Phone className="w-4 h-4" />
+                <span className="hidden md:inline">Contact Help</span>
+              </button>
             </div>
           </div>
         </div>
@@ -214,6 +224,61 @@ export function ProductCatalog() {
       {/* Smooth Transition Overlay - Black to White Fade */}
       {isTransitioning && (
         <div className="fixed inset-0 z-[100] bg-gradient-to-br from-black via-gray-900 to-white animate-fadeToWhite pointer-events-none" />
+      )}
+
+      {/* Contact Help Modal */}
+      {showContactModal && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-gradient-to-br from-zinc-900 to-black rounded-2xl shadow-2xl max-w-md w-full p-6 border border-white/10 animate-in fade-in duration-200">
+            <div className="flex items-center justify-between mb-6">
+              <h3 className="text-2xl font-bold text-white">Contact Support</h3>
+              <button
+                onClick={() => setShowContactModal(false)}
+                className="text-gray-400 hover:text-white transition-colors"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            
+            <div className="space-y-4">
+              <p className="text-gray-400 mb-6">Need help with your order? Contact us on these numbers:</p>
+              
+              {/* Phone Number 1 */}
+              <a
+                href="tel:+916204109028"
+                className="flex items-center gap-4 p-4 bg-gradient-to-r from-green-900/50 to-emerald-900/50 border-2 border-green-500/30 rounded-xl hover:border-green-500 hover:shadow-lg hover:shadow-green-500/20 transform hover:scale-[1.02] transition-all group"
+              >
+                <div className="bg-green-600 p-3 rounded-full group-hover:bg-green-500 transition-colors">
+                  <Phone className="w-6 h-6 text-white" />
+                </div>
+                <div>
+                  <p className="text-sm text-gray-400 font-medium">Support Line 1</p>
+                  <p className="text-lg font-bold text-white">+91 6204109028</p>
+                </div>
+              </a>
+
+              {/* Phone Number 2 */}
+              <a
+                href="tel:+918797903378"
+                className="flex items-center gap-4 p-4 bg-gradient-to-r from-blue-900/50 to-indigo-900/50 border-2 border-blue-500/30 rounded-xl hover:border-blue-500 hover:shadow-lg hover:shadow-blue-500/20 transform hover:scale-[1.02] transition-all group"
+              >
+                <div className="bg-blue-600 p-3 rounded-full group-hover:bg-blue-500 transition-colors">
+                  <Phone className="w-6 h-6 text-white" />
+                </div>
+                <div>
+                  <p className="text-sm text-gray-400 font-medium">Support Line 2</p>
+                  <p className="text-lg font-bold text-white">+91 8797903378</p>
+                </div>
+              </a>
+            </div>
+
+            <div className="mt-6 pt-4 border-t border-white/10">
+              <p className="text-sm text-gray-500 text-center">Available 24/7 for support</p>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
