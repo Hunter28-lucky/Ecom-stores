@@ -58,7 +58,6 @@ export function ProductDetail({ product, onBack }: ProductDetailProps) {
   const [remainingSeconds, setRemainingSeconds] = useState(0);
   const [paymentExpired, setPaymentExpired] = useState(false);
   const customerFormRef = useRef<HTMLDivElement | null>(null);
-  const [showContactModal, setShowContactModal] = useState(false);
   
   // Field error tracking
   const [fieldErrors, setFieldErrors] = useState({
@@ -1157,14 +1156,6 @@ export function ProductDetail({ product, onBack }: ProductDetailProps) {
                       className="h-10 w-auto object-contain"
                     />
                   </button>
-                  
-                  <button
-                    onClick={() => setShowContactModal(true)}
-                    className="bg-gradient-to-r from-orange-600 to-orange-500 text-white py-3 rounded-xl font-bold shadow-lg hover:shadow-xl transform hover:scale-[1.02] transition-all flex items-center justify-center gap-2"
-                  >
-                    <Phone className="w-5 h-5" />
-                    Contact Help
-                  </button>
                 </div>
                 
                 <button
@@ -1199,60 +1190,6 @@ export function ProductDetail({ product, onBack }: ProductDetailProps) {
         </div>
       </div>
 
-      {/* Contact Help Modal */}
-      {showContactModal && (
-        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 animate-in fade-in duration-200">
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-2xl font-bold text-gray-900">Contact Support</h3>
-              <button
-                onClick={() => setShowContactModal(false)}
-                className="text-gray-400 hover:text-gray-600 transition-colors"
-              >
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
-            </div>
-            
-            <div className="space-y-4">
-              <p className="text-gray-600 mb-6">Need help with your order? Contact us on these numbers:</p>
-              
-              {/* Phone Number 1 */}
-              <a
-                href="tel:+916204109028"
-                className="flex items-center gap-4 p-4 bg-gradient-to-r from-green-50 to-emerald-50 border-2 border-green-200 rounded-xl hover:border-green-400 hover:shadow-lg transform hover:scale-[1.02] transition-all group"
-              >
-                <div className="bg-green-600 p-3 rounded-full group-hover:bg-green-700 transition-colors">
-                  <Phone className="w-6 h-6 text-white" />
-                </div>
-                <div>
-                  <p className="text-sm text-gray-600 font-medium">Support Line 1</p>
-                  <p className="text-lg font-bold text-gray-900">+91 6204109028</p>
-                </div>
-              </a>
-
-              {/* Phone Number 2 */}
-              <a
-                href="tel:+918797903378"
-                className="flex items-center gap-4 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-200 rounded-xl hover:border-blue-400 hover:shadow-lg transform hover:scale-[1.02] transition-all group"
-              >
-                <div className="bg-blue-600 p-3 rounded-full group-hover:bg-blue-700 transition-colors">
-                  <Phone className="w-6 h-6 text-white" />
-                </div>
-                <div>
-                  <p className="text-sm text-gray-600 font-medium">Support Line 2</p>
-                  <p className="text-lg font-bold text-gray-900">+91 8797903378</p>
-                </div>
-              </a>
-            </div>
-
-            <div className="mt-6 pt-4 border-t border-gray-200">
-              <p className="text-sm text-gray-500 text-center">Available 24/7 for support</p>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
