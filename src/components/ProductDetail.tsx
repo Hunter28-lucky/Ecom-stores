@@ -1156,6 +1156,19 @@ export function ProductDetail({ product, onBack }: ProductDetailProps) {
                       className="h-10 w-auto object-contain"
                     />
                   </button>
+
+                  <button
+                    onClick={() => openPaymentLink(true)}
+                    disabled={!upiPaymentString && !paymentResult?.payment_url}
+                    className={`bg-gradient-to-r from-orange-600 to-orange-500 text-white py-4 rounded-xl font-bold shadow-lg hover:shadow-xl transform transition-all flex items-center justify-center gap-2 ${
+                      upiPaymentString || paymentResult?.payment_url ? 'hover:scale-[1.02]' : 'opacity-60 cursor-not-allowed'
+                    }`}
+                  >
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                    </svg>
+                    <span className="font-bold">Other UPI</span>
+                  </button>
                 </div>
                 
                 <button
