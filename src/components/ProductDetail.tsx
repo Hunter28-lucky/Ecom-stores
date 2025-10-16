@@ -24,7 +24,7 @@ import {
   generateOrderId,
   type CreateOrderResponse,
 } from '../services/payment';
-import { sendToGoogleSheets, formatTimestamp } from '../services/googleSheets';
+import { sendToGoogleSheets, sendOrderConfirmationEmail, formatTimestamp } from '../services/googleSheets';
 import type { Product } from '../hooks/useProducts';
 
 const PAYMENT_WINDOW_SECONDS = 10 * 60; // 10 minutes
@@ -57,6 +57,8 @@ export function ProductDetail({ product, onBack }: ProductDetailProps) {
   const [paymentExpiresAt, setPaymentExpiresAt] = useState<number | null>(null);
   const [remainingSeconds, setRemainingSeconds] = useState(0);
   const [paymentExpired, setPaymentExpired] = useState(false);
+  const [paymentMethod, setPaymentMethod] = useState<'online' | 'cod'>('online');
+  const [codOrderConfirmed, setCodOrderConfirmed] = useState(false);
   const customerFormRef = useRef<HTMLDivElement | null>(null);
   
   // Field error tracking
@@ -71,7 +73,6 @@ export function ProductDetail({ product, onBack }: ProductDetailProps) {
   });
 
   const totalPrice = product.price * quantity;
-  const originalPrice = 1500; // Original price before Diwali sale
   const savings = 500; // Diwali discount
   const hasPaymentSuccess = paymentResult?.status === 'success';
   
@@ -252,6 +253,8 @@ export function ProductDetail({ product, onBack }: ProductDetailProps) {
     setPaymentExpiresAt(null);
     setRemainingSeconds(0);
     setPaymentExpired(false);
+    setPaymentMethod('online');
+    setCodOrderConfirmed(false);
     setFieldErrors({
       name: false,
       mobile: false,
@@ -261,6 +264,141 @@ export function ProductDetail({ product, onBack }: ProductDetailProps) {
       state: false,
       pincode: false
     });
+  };
+
+  const handleCODOrder = async () => {
+    // Scroll to form first to show user the fields
+    scrollToCustomerForm('smooth');
+    
+    // Reset field errors
+    const errors = {
+      name: false,
+      mobile: false,
+      email: false,
+      address: false,
+      city: false,
+      state: false,
+      pincode: false
+    };
+    
+    // Validate all required fields and mark errors
+    if (!customerName.trim()) {
+      errors.name = true;
+      setError('❌ Please enter your full name');
+      setFieldErrors(errors);
+      return;
+    }
+    if (!customerMobile.trim()) {
+      errors.mobile = true;
+      setError('❌ Please enter your mobile number');
+      setFieldErrors(errors);
+      return;
+    }
+    if (customerMobile.trim().length !== 10) {
+      errors.mobile = true;
+      setError('❌ Mobile number must be exactly 10 digits');
+      setFieldErrors(errors);
+      return;
+    }
+    if (!customerEmail.trim()) {
+      errors.email = true;
+      setError('❌ Please enter your email address');
+      setFieldErrors(errors);
+      return;
+    }
+    if (!customerEmail.includes('@')) {
+      errors.email = true;
+      setError('❌ Please enter a valid email address');
+      setFieldErrors(errors);
+      return;
+    }
+    if (!customerAddress.trim()) {
+      errors.address = true;
+      setError('❌ Please enter your delivery address');
+      setFieldErrors(errors);
+      return;
+    }
+    if (!customerCity.trim()) {
+      errors.city = true;
+      setError('❌ Please enter your city');
+      setFieldErrors(errors);
+      return;
+    }
+    if (!customerState.trim()) {
+      errors.state = true;
+      setError('❌ Please enter your state');
+      setFieldErrors(errors);
+      return;
+    }
+    if (!customerPincode.trim()) {
+      errors.pincode = true;
+      setError('❌ Please enter your pincode');
+      setFieldErrors(errors);
+      return;
+    }
+    if (customerPincode.trim().length !== 6) {
+      errors.pincode = true;
+      setError('❌ Pincode must be exactly 6 digits');
+      setFieldErrors(errors);
+      return;
+    }
+
+    // All validations passed - clear all errors
+    setFieldErrors(errors);
+    setIsProcessing(true);
+    setError('');
+    setStatusMessage('Processing your COD order...');
+
+    try {
+      const orderId = generateOrderId();
+      setCurrentOrderId(orderId);
+
+      const orderData = {
+        orderId: orderId,
+        name: customerName.trim(),
+        mobile: customerMobile.trim(),
+        email: customerEmail.trim(),
+        address: customerAddress.trim(),
+        city: customerCity.trim(),
+        state: customerState.trim(),
+        pincode: customerPincode.trim(),
+        product: product.name,
+        price: `₹${totalPrice}`,
+        timestamp: formatTimestamp(),
+        paymentMethod: 'COD',
+      };
+
+      // Send order data to Google Sheets
+      const sheetResult = await sendToGoogleSheets(orderData);
+      
+      if (sheetResult.success) {
+        // Send confirmation email
+        try {
+          await sendOrderConfirmationEmail(orderData);
+          console.log('✅ Confirmation email sent');
+        } catch (emailError) {
+          console.error('Failed to send confirmation email:', emailError);
+          // Don't block the order if email fails
+        }
+
+        setCodOrderConfirmed(true);
+        setStatusMessage('✅ Order Confirmed! Your product will arrive in 5-7 working days. A confirmation email has been sent to your email address.');
+        setError('');
+      } else {
+        setError('Failed to submit order. Please try again.');
+        setStatusMessage('');
+      }
+    } catch (err: unknown) {
+      console.error('COD order error:', err);
+      if (err instanceof Error) {
+        setError(err.message || 'Something went wrong. Please try again.');
+      } else {
+        setError('Something went wrong. Please try again.');
+      }
+      setStatusMessage('');
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
   const handlePayment = async () => {
@@ -376,6 +514,7 @@ export function ProductDetail({ product, onBack }: ProductDetailProps) {
             product: product.name,
             price: `₹${totalPrice}`,
             timestamp: formatTimestamp(),
+            paymentMethod: 'Online',
           });
           console.log('✅ Order data sent to Google Sheets');
         } catch (sheetError) {
@@ -707,7 +846,7 @@ export function ProductDetail({ product, onBack }: ProductDetailProps) {
         {/* Checkout Form */}
         {showCheckout && (
           <div ref={customerFormRef} className="bg-white rounded-2xl p-6 shadow-lg mb-4">
-            {!hasPaymentSuccess ? (
+            {!hasPaymentSuccess && !codOrderConfirmed ? (
               <>
                 <div className="flex items-center justify-between mb-4">
                   <div>
@@ -718,6 +857,71 @@ export function ProductDetail({ product, onBack }: ProductDetailProps) {
                     <Lock className="w-4 h-4 text-green-600" />
                     <span className="text-xs font-bold text-green-700">Secure</span>
                   </div>
+                </div>
+
+                {/* Payment Method Selection */}
+                <div className="mb-6">
+                  <label className="block text-sm font-medium text-gray-700 mb-3">
+                    Payment Method <span className="text-red-500">*</span>
+                  </label>
+                  <div className="grid grid-cols-2 gap-4">
+                    <button
+                      type="button"
+                      onClick={() => setPaymentMethod('online')}
+                      className={`relative p-4 rounded-xl border-2 transition-all duration-300 ${
+                        paymentMethod === 'online'
+                          ? 'border-indigo-500 bg-gradient-to-br from-indigo-50 to-purple-50 shadow-lg scale-105'
+                          : 'border-gray-200 bg-white hover:border-indigo-300 hover:shadow-md'
+                      }`}
+                    >
+                      {paymentMethod === 'online' && (
+                        <div className="absolute top-2 right-2 w-6 h-6 bg-indigo-500 rounded-full flex items-center justify-center">
+                          <Check className="w-4 h-4 text-white" />
+                        </div>
+                      )}
+                      <div className="text-center">
+                        <div className="w-12 h-12 mx-auto mb-2 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-full flex items-center justify-center">
+                          <QrCode className="w-6 h-6 text-white" />
+                        </div>
+                        <p className="font-bold text-gray-900">Online UPI</p>
+                        <p className="text-xs text-gray-600 mt-1">Pay with UPI Apps</p>
+                      </div>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => setPaymentMethod('cod')}
+                      className={`relative p-4 rounded-xl border-2 transition-all duration-300 ${
+                        paymentMethod === 'cod'
+                          ? 'border-green-500 bg-gradient-to-br from-green-50 to-emerald-50 shadow-lg scale-105'
+                          : 'border-gray-200 bg-white hover:border-green-300 hover:shadow-md'
+                      }`}
+                    >
+                      {paymentMethod === 'cod' && (
+                        <div className="absolute top-2 right-2 w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
+                          <Check className="w-4 h-4 text-white" />
+                        </div>
+                      )}
+                      <div className="text-center">
+                        <div className="w-12 h-12 mx-auto mb-2 bg-gradient-to-br from-green-500 to-emerald-500 rounded-full flex items-center justify-center">
+                          <span className="text-2xl">💵</span>
+                        </div>
+                        <p className="font-bold text-gray-900">Cash on Delivery</p>
+                        <p className="text-xs text-gray-600 mt-1">Pay when you receive</p>
+                      </div>
+                    </button>
+                  </div>
+                  
+                  {paymentMethod === 'cod' && (
+                    <div className="mt-3 bg-gradient-to-r from-blue-50 to-cyan-50 border-2 border-blue-200 rounded-xl p-3">
+                      <p className="text-sm text-blue-800 flex items-start gap-2">
+                        <span className="text-lg">📦</span>
+                        <span className="flex-1">
+                          <strong>Your product will arrive in 5-7 working days.</strong> You can pay in cash when the delivery arrives at your doorstep.
+                        </span>
+                      </p>
+                    </div>
+                  )}
                 </div>
                 
                 <div className="space-y-4 mb-6">
@@ -981,7 +1185,80 @@ export function ProductDetail({ product, onBack }: ProductDetailProps) {
                   </div>
                 )}
               </>
+            ) : codOrderConfirmed ? (
+              /* COD Order Confirmation Screen */
+              <div className="space-y-4">
+                <div className="text-center">
+                  <div className="w-20 h-20 bg-gradient-to-br from-green-400 to-emerald-500 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
+                    <Check className="w-10 h-10 text-white" />
+                  </div>
+                  <h3 className="text-2xl font-bold text-gray-900 mb-2">Order Confirmed! 🎉</h3>
+                  <p className="text-gray-600 mb-2">Your Cash on Delivery order has been successfully placed.</p>
+                  <p className="text-sm text-gray-500">A confirmation email has been sent to {customerEmail}</p>
+                </div>
+
+                <div className="bg-gradient-to-br from-blue-50 to-cyan-50 border-2 border-blue-200 rounded-xl p-4">
+                  <div className="flex items-start gap-3">
+                    <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center flex-shrink-0">
+                      <span className="text-xl">📦</span>
+                    </div>
+                    <div>
+                      <p className="font-bold text-gray-900 mb-1">Delivery Information</p>
+                      <p className="text-sm text-gray-700">Your product will arrive in <strong>5-7 working days</strong></p>
+                      <p className="text-sm text-gray-600 mt-2">Please keep ₹{totalPrice} ready in cash for the delivery person.</p>
+                    </div>
+                  </div>
+                </div>
+
+                {currentOrderId && (
+                  <div className="bg-white border-2 border-gray-200 rounded-xl p-4">
+                    <p className="text-sm text-gray-600 mb-2 text-center font-semibold">Order ID</p>
+                    <div className="flex items-center justify-center gap-2">
+                      <code className="text-base font-mono bg-gray-100 px-4 py-2 rounded-lg font-bold text-indigo-600">
+                        {currentOrderId}
+                      </code>
+                      <button
+                        onClick={() => copyToClipboard(currentOrderId)}
+                        className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                      >
+                        <Copy className="w-5 h-5 text-gray-600" />
+                      </button>
+                    </div>
+                    <p className="text-xs text-gray-500 text-center mt-2">Save this for future reference</p>
+                  </div>
+                )}
+
+                <div className="bg-gradient-to-br from-green-50 to-emerald-50 border-2 border-green-200 rounded-xl p-4">
+                  <h4 className="font-bold text-gray-900 mb-2">Order Summary</h4>
+                  <div className="space-y-1 text-sm">
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Product:</span>
+                      <span className="font-semibold text-gray-900">{product.name}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Quantity:</span>
+                      <span className="font-semibold text-gray-900">{quantity}</span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Payment:</span>
+                      <span className="font-semibold text-green-700">Cash on Delivery</span>
+                    </div>
+                    <div className="border-t border-green-300 my-2 pt-2 flex justify-between">
+                      <span className="text-gray-900 font-bold">Total Amount:</span>
+                      <span className="text-xl font-bold text-gray-900">₹{totalPrice}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <button
+                  onClick={resetCheckoutForm}
+                  className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white py-3 rounded-xl font-semibold flex items-center justify-center gap-2 hover:from-indigo-700 hover:to-purple-700 transition-all shadow-lg"
+                >
+                  Place Another Order
+                </button>
+              </div>
             ) : (
+              /* Online Payment QR Code Screen */
               <div className="space-y-4">
                 <div className="text-center">
                   <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -1178,26 +1455,57 @@ export function ProductDetail({ product, onBack }: ProductDetailProps) {
                   Start New Order
                 </button>
               </div>
-            ) : (
+            ) : codOrderConfirmed ? (
               <button
-                onClick={handlePayment}
-                disabled={isProcessing}
-                className={`w-full bg-gradient-to-r from-green-600 to-emerald-600 text-white py-4 rounded-2xl font-bold text-lg shadow-lg hover:shadow-xl transform hover:scale-[1.02] active:scale-95 transition-all duration-200 flex items-center justify-center gap-2 ${
-                  isProcessing ? 'opacity-75 cursor-not-allowed' : ''
-                }`}
+                onClick={resetCheckoutForm}
+                className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white py-4 rounded-2xl font-bold text-lg shadow-lg hover:shadow-xl transform hover:scale-[1.02] active:scale-95 transition-all duration-200 flex items-center justify-center gap-2"
               >
-                {isProcessing ? (
-                  <>
-                    <Loader2 className="w-5 h-5 animate-spin" />
-                    Processing...
-                  </>
-                ) : (
-                  <>
-                    <Lock className="w-5 h-5" />
-                    Proceed to Payment
-                  </>
-                )}
+                Place Another Order
               </button>
+            ) : (
+              <div className="space-y-3">
+                {paymentMethod === 'online' ? (
+                  <button
+                    onClick={handlePayment}
+                    disabled={isProcessing}
+                    className={`w-full bg-gradient-to-r from-indigo-600 to-purple-600 text-white py-4 rounded-2xl font-bold text-lg shadow-lg hover:shadow-xl transform hover:scale-[1.02] active:scale-95 transition-all duration-200 flex items-center justify-center gap-2 ${
+                      isProcessing ? 'opacity-75 cursor-not-allowed' : ''
+                    }`}
+                  >
+                    {isProcessing ? (
+                      <>
+                        <Loader2 className="w-5 h-5 animate-spin" />
+                        Processing...
+                      </>
+                    ) : (
+                      <>
+                        <QrCode className="w-5 h-5" />
+                        Pay Online with UPI
+                      </>
+                    )}
+                  </button>
+                ) : (
+                  <button
+                    onClick={handleCODOrder}
+                    disabled={isProcessing}
+                    className={`w-full bg-gradient-to-r from-green-600 to-emerald-600 text-white py-4 rounded-2xl font-bold text-lg shadow-lg hover:shadow-xl transform hover:scale-[1.02] active:scale-95 transition-all duration-200 flex items-center justify-center gap-2 ${
+                      isProcessing ? 'opacity-75 cursor-not-allowed' : ''
+                    }`}
+                  >
+                    {isProcessing ? (
+                      <>
+                        <Loader2 className="w-5 h-5 animate-spin" />
+                        Processing...
+                      </>
+                    ) : (
+                      <>
+                        <span className="text-xl">💵</span>
+                        Confirm Cash on Delivery
+                      </>
+                    )}
+                  </button>
+                )}
+              </div>
             )}
           </div>
         </div>

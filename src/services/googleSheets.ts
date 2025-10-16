@@ -15,6 +15,7 @@ interface OrderData {
   product: string;
   price: string;
   timestamp: string;
+  paymentMethod?: string; // 'Online' or 'COD'
 }
 
 /**
@@ -24,13 +25,18 @@ interface OrderData {
  */
 export async function sendToGoogleSheets(orderData: OrderData): Promise<{ success: boolean; message: string }> {
   try {
+    const dataWithPaymentMethod = {
+      ...orderData,
+      paymentMethod: orderData.paymentMethod || 'Online', // Default to 'Online' if not specified
+    };
+
     await fetch(GOOGLE_SHEETS_URL, {
       method: 'POST',
       mode: 'no-cors', // Required for Google Apps Script
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(orderData),
+      body: JSON.stringify(dataWithPaymentMethod),
     });
 
     // Note: With 'no-cors' mode, we can't read the response
@@ -73,4 +79,62 @@ export function formatTimestamp(): string {
   const seconds = String(date.getSeconds()).padStart(2, '0');
   
   return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}`;
+}
+
+/**
+ * Send order confirmation email to customer
+ * @param orderData - Customer and order information
+ * @returns Promise with success/error status
+ */
+export async function sendOrderConfirmationEmail(orderData: OrderData): Promise<{ success: boolean; message: string }> {
+  try {
+    // Using the same Google Apps Script endpoint for email sending
+    const emailData = {
+      ...orderData,
+      action: 'sendEmail', // Flag to tell the script to send email
+      emailSubject: `Order Confirmation - ${orderData.orderId}`,
+      emailMessage: `
+Dear ${orderData.name},
+
+Thank you for your order! Your order has been confirmed.
+
+Order Details:
+- Order ID: ${orderData.orderId}
+- Product: ${orderData.product}
+- Amount: ${orderData.price}
+- Payment Method: ${orderData.paymentMethod || 'Online'}
+
+Delivery Address:
+${orderData.address}
+${orderData.city}, ${orderData.state} - ${orderData.pincode}
+
+${orderData.paymentMethod === 'COD' ? '📦 Your product will arrive in 5-7 working days.' : '📦 Your product will be shipped soon.'}
+
+Thank you for shopping with us!
+
+Best regards,
+Your Store Team
+      `.trim(),
+    };
+
+    await fetch(GOOGLE_SHEETS_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(emailData),
+    });
+
+    return {
+      success: true,
+      message: 'Confirmation email sent successfully',
+    };
+  } catch (error) {
+    console.error('Error sending confirmation email:', error);
+    return {
+      success: false,
+      message: error instanceof Error ? error.message : 'Failed to send email',
+    };
+  }
 }
