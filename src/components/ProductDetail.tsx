@@ -16,6 +16,7 @@ import {
   Mail,
   MapPin,
   Home,
+  Share2,
 } from 'lucide-react';
 import QRCode from 'qrcode';
 import {
@@ -26,6 +27,16 @@ import {
 } from '../services/payment';
 import { sendToGoogleSheets, sendOrderConfirmationEmail, formatTimestamp } from '../services/googleSheets';
 import type { Product } from '../hooks/useProducts';
+import { getProductUrl, shareProduct } from '../utils/routing';
+import { setProductSEO } from '../utils/seo';
+import {
+  trackViewContent,
+  trackAddToCart,
+  trackInitiateCheckout,
+  trackAddPaymentInfo,
+  trackPurchase,
+  trackShare,
+} from '../utils/facebookPixel';
 
 const PAYMENT_WINDOW_SECONDS = 10 * 60; // 10 minutes
 
@@ -115,6 +126,20 @@ export function ProductDetail({ product, onBack }: ProductDetailProps) {
       customerFormRef.current.scrollIntoView({ behavior, block: 'start' });
     }
   };
+
+  // Update SEO when product loads
+  useEffect(() => {
+    const productUrl = getProductUrl(product);
+    setProductSEO(product, productUrl);
+    
+    // Track product view for Facebook Pixel
+    trackViewContent({
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      category: product.category,
+    });
+  }, [product]);
 
   // No auto-scroll on page load - let user see images first
   // Scroll happens when user clicks "Proceed to Payment"
@@ -349,9 +374,25 @@ export function ProductDetail({ product, onBack }: ProductDetailProps) {
     setError('');
     setStatusMessage('Processing your COD order...');
 
+    // Track checkout initiation for COD
+    trackInitiateCheckout({
+      productId: product.id,
+      productName: product.name,
+      value: totalPrice,
+      quantity,
+    });
+
     try {
       const orderId = generateOrderId();
       setCurrentOrderId(orderId);
+
+      // Track payment method selection (COD)
+      trackAddPaymentInfo({
+        productId: product.id,
+        productName: product.name,
+        value: totalPrice,
+        paymentMethod: 'cod',
+      });
 
       const orderData = {
         orderId: orderId,
@@ -380,6 +421,16 @@ export function ProductDetail({ product, onBack }: ProductDetailProps) {
           console.error('Failed to send confirmation email:', emailError);
           // Don't block the order if email fails
         }
+
+        // Track successful COD purchase
+        trackPurchase({
+          orderId,
+          productId: product.id,
+          productName: product.name,
+          value: totalPrice,
+          quantity,
+          paymentMethod: 'cod',
+        });
 
         setCodOrderConfirmed(true);
         setStatusMessage('✅ Order Confirmed! Your product will arrive in 5-7 working days. A confirmation email has been sent to your email address.');
@@ -484,9 +535,25 @@ export function ProductDetail({ product, onBack }: ProductDetailProps) {
     setError('');
     setStatusMessage('Creating your secure payment link...');
 
+    // Track checkout initiation
+    trackInitiateCheckout({
+      productId: product.id,
+      productName: product.name,
+      value: totalPrice,
+      quantity,
+    });
+
     try {
       const orderId = generateOrderId();
       setCurrentOrderId(orderId);
+
+      // Track payment method selection
+      trackAddPaymentInfo({
+        productId: product.id,
+        productName: product.name,
+        value: totalPrice,
+        paymentMethod: 'online',
+      });
 
       const result = await createPaymentOrder({
         orderId: orderId,
@@ -553,6 +620,16 @@ export function ProductDetail({ product, onBack }: ProductDetailProps) {
       if (status.status === 'success' && status.data) {
         if (status.data.status === 'SUCCESS' || status.data.status === 'COMPLETED') {
           setOrderStatusMessage('🎉 Payment Successful! Your order is confirmed.');
+          
+          // Track successful purchase for Facebook Pixel
+          trackPurchase({
+            orderId: currentOrderId,
+            productId: product.id,
+            productName: product.name,
+            value: totalPrice,
+            quantity,
+            paymentMethod: 'online',
+          });
         } else if (status.data.status === 'PENDING' || status.data.status === 'CREATED') {
           setOrderStatusMessage('⏳ Payment pending. Please complete the payment.');
         } else if (status.data.status === 'FAILED') {
@@ -673,17 +750,58 @@ export function ProductDetail({ product, onBack }: ProductDetailProps) {
     }
   ];
 
+  const [shareMessage, setShareMessage] = useState('');
+
+  const handleShare = async () => {
+    const result = await shareProduct(product);
+    if (result.success) {
+      // Track share event
+      trackShare({
+        id: product.id,
+        name: product.name,
+        shareMethod: result.method as 'native' | 'clipboard',
+      });
+      
+      if (result.method === 'native') {
+        setShareMessage('Shared successfully!');
+      } else {
+        setShareMessage('Link copied to clipboard!');
+      }
+      setTimeout(() => setShareMessage(''), 3000);
+    } else {
+      setShareMessage('Failed to share. Please try again.');
+      setTimeout(() => setShareMessage(''), 3000);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50">
-      {/* Back Button */}
+      {/* Header with Back and Share Buttons */}
       <div className="max-w-sm sm:max-w-md mx-auto pt-4 px-4">
-        <button
-          onClick={onBack}
-          className="flex items-center gap-2 text-indigo-600 hover:text-indigo-700 font-semibold mb-4"
-        >
-          <ArrowLeft className="w-5 h-5" />
-          Back to Products
-        </button>
+        <div className="flex items-center justify-between mb-4">
+          <button
+            onClick={onBack}
+            className="flex items-center gap-2 text-indigo-600 hover:text-indigo-700 font-semibold"
+          >
+            <ArrowLeft className="w-5 h-5" />
+            Back to Products
+          </button>
+          
+          <button
+            onClick={handleShare}
+            className="flex items-center gap-2 bg-gradient-to-r from-indigo-500 to-purple-500 text-white px-4 py-2 rounded-full hover:from-indigo-600 hover:to-purple-600 transition-all shadow-lg hover:shadow-xl font-medium text-sm"
+          >
+            <Share2 className="w-4 h-4" />
+            Share
+          </button>
+        </div>
+        
+        {/* Share Success Message */}
+        {shareMessage && (
+          <div className="mb-4 bg-green-50 border border-green-200 text-green-800 px-4 py-2 rounded-lg text-sm text-center animate-fade-in">
+            {shareMessage}
+          </div>
+        )}
       </div>
 
       <div className="max-w-sm sm:max-w-md mx-auto pb-32 px-4">
@@ -867,7 +985,16 @@ export function ProductDetail({ product, onBack }: ProductDetailProps) {
                   <div className="grid grid-cols-2 gap-4">
                     <button
                       type="button"
-                      onClick={() => setPaymentMethod('online')}
+                      onClick={() => {
+                        setPaymentMethod('online');
+                        // Track add to cart when user selects payment method
+                        trackAddToCart({
+                          id: product.id,
+                          name: product.name,
+                          price: product.price,
+                          quantity,
+                        });
+                      }}
                       className={`relative p-4 rounded-xl border-2 transition-all duration-300 ${
                         paymentMethod === 'online'
                           ? 'border-indigo-500 bg-gradient-to-br from-indigo-50 to-purple-50 shadow-lg scale-105'
@@ -890,7 +1017,16 @@ export function ProductDetail({ product, onBack }: ProductDetailProps) {
 
                     <button
                       type="button"
-                      onClick={() => setPaymentMethod('cod')}
+                      onClick={() => {
+                        setPaymentMethod('cod');
+                        // Track add to cart when user selects COD
+                        trackAddToCart({
+                          id: product.id,
+                          name: product.name,
+                          price: product.price,
+                          quantity,
+                        });
+                      }}
                       className={`relative p-4 rounded-xl border-2 transition-all duration-300 ${
                         paymentMethod === 'cod'
                           ? 'border-green-500 bg-gradient-to-br from-green-50 to-emerald-50 shadow-lg scale-105'

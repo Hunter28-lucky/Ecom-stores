@@ -5,6 +5,15 @@ import { ProductDetail } from './ProductDetail';
 import { AdminDashboard } from './AdminDashboard';
 import { AdminLogin } from './AdminLogin';
 import { SplashScreen } from './SplashScreen';
+import {
+  navigateToProduct,
+  navigateToHome,
+  getCurrentProductSlug,
+  isAdminPath,
+  findProductBySlug,
+} from '../utils/routing';
+import { resetHomeSEO } from '../utils/seo';
+import { trackPageView } from '../utils/facebookPixel';
 
 export function ProductCatalog() {
   const { products, loading, error } = useProducts();
@@ -25,6 +34,8 @@ export function ProductCatalog() {
 
   const handleProductClick = (product: Product) => {
     setIsTransitioning(true);
+    // Update URL to product page
+    navigateToProduct(product);
     // Smooth fade transition before showing product page
     setTimeout(() => {
       setSelectedProduct(product);
@@ -32,19 +43,68 @@ export function ProductCatalog() {
     }, 300); // 300ms transition
   };
 
+  // Handle browser back/forward buttons
+  useEffect(() => {
+    const handlePopState = () => {
+      const productSlug = getCurrentProductSlug();
+      const isAdmin = isAdminPath();
+
+      if (isAdmin) {
+        setShowAdmin(true);
+        setSelectedProduct(null);
+      } else if (productSlug && products.length > 0) {
+        const product = findProductBySlug(products, productSlug);
+        if (product) {
+          setSelectedProduct(product);
+          setShowAdmin(false);
+        } else {
+          // Invalid product slug - go home
+          navigateToHome();
+          setSelectedProduct(null);
+          setShowAdmin(false);
+        }
+      } else {
+        // Home page
+        setSelectedProduct(null);
+        setShowAdmin(false);
+        resetHomeSEO();
+      }
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, [products]);
+
+  // Check URL on initial load and when products load
+  useEffect(() => {
+    if (products.length === 0) return; // Wait for products to load
+
+    const productSlug = getCurrentProductSlug();
+    const isAdmin = isAdminPath();
+
+    if (isAdmin) {
+      setShowAdmin(true);
+    } else if (productSlug) {
+      // Direct link to product page
+      const product = findProductBySlug(products, productSlug);
+      if (product) {
+        setSelectedProduct(product);
+      } else {
+        // Invalid product slug - redirect to home
+        navigateToHome();
+      }
+    } else {
+      // Home page
+      resetHomeSEO();
+      trackPageView(); // Track when returning to home
+    }
+  }, [products]);
+
   // Check if user is authenticated from sessionStorage
   useEffect(() => {
     const auth = sessionStorage.getItem('adminAuthenticated');
     if (auth === 'true') {
       setIsAuthenticated(true);
-    }
-  }, []);
-
-  // Check URL for /admin path
-  useEffect(() => {
-    const path = window.location.pathname;
-    if (path === '/admin' || path === '/admin/') {
-      setShowAdmin(true);
     }
   }, []);
 
@@ -88,14 +148,19 @@ export function ProductCatalog() {
       <AdminDashboard
         onBack={() => {
           setShowAdmin(false);
-          window.history.pushState({}, '', '/');
+          navigateToHome();
+          resetHomeSEO();
         }}
       />
     );
   }
 
   if (selectedProduct) {
-    return <ProductDetail product={selectedProduct} onBack={() => setSelectedProduct(null)} />;
+    return <ProductDetail product={selectedProduct} onBack={() => {
+      setSelectedProduct(null);
+      navigateToHome();
+      resetHomeSEO();
+    }} />;
   }
 
   return (
