@@ -86,7 +86,6 @@ export function ProductDetail({ product, onBack }: ProductDetailProps) {
   });
 
   const totalPrice = product.price * quantity;
-  const savings = 500; // Diwali discount
   const hasPaymentSuccess = paymentResult?.status === 'success';
   
   // Diwali Sale Countdown Timer (12 minutes)
@@ -847,9 +846,6 @@ export function ProductDetail({ product, onBack }: ProductDetailProps) {
               alt={`${product.name} - View ${selectedImage + 1}`}
               className="w-full aspect-square object-cover"
             />
-            <div className="absolute top-4 right-4 bg-gradient-to-r from-red-500 to-pink-500 text-white px-4 py-2 rounded-full font-bold text-sm shadow-lg animate-pulse">
-              ₹{savings} OFF
-            </div>
             <div className="absolute bottom-4 left-4 bg-white/90 backdrop-blur-sm text-gray-900 px-3 py-1 rounded-full text-xs font-semibold shadow-lg">
               {selectedImage + 1} / {product.images?.length || 1}
             </div>
