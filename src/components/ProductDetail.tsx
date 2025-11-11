@@ -37,6 +37,7 @@ import {
   trackPurchase,
   trackShare,
 } from '../utils/facebookPixel';
+import { successHaptic, selectionHaptic } from '../utils/haptics';
 
 const PAYMENT_WINDOW_SECONDS = 10 * 60; // 10 minutes
 
@@ -68,8 +69,9 @@ export function ProductDetail({ product, onBack }: ProductDetailProps) {
   const [paymentExpiresAt, setPaymentExpiresAt] = useState<number | null>(null);
   const [remainingSeconds, setRemainingSeconds] = useState(0);
   const [paymentExpired, setPaymentExpired] = useState(false);
-  const [paymentMethod, setPaymentMethod] = useState<'online' | 'cod'>('online');
+  const [paymentMethod, setPaymentMethod] = useState<'online' | 'cod'>('cod'); // Default to COD
   const [codOrderConfirmed, setCodOrderConfirmed] = useState(false);
+  const [showCodPopup, setShowCodPopup] = useState(false); // COD availability popup
   const customerFormRef = useRef<HTMLDivElement | null>(null);
   
   // Field error tracking
@@ -140,6 +142,27 @@ export function ProductDetail({ product, onBack }: ProductDetailProps) {
       category: product.category,
     });
   }, [product]);
+
+  // Show COD availability popup on mobile (once per session)
+  useEffect(() => {
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    const hasSeenPopup = sessionStorage.getItem('codPopupShown');
+    
+    if (isMobile && !hasSeenPopup) {
+      // Small delay to let page render first
+      const timer = setTimeout(() => {
+        setShowCodPopup(true);
+        sessionStorage.setItem('codPopupShown', 'true');
+        
+        // Auto-hide after 4 seconds
+        setTimeout(() => {
+          setShowCodPopup(false);
+        }, 4000);
+      }, 800);
+      
+      return () => clearTimeout(timer);
+    }
+  }, []);
 
   // No auto-scroll on page load - let user see images first
   // Scroll happens when user clicks "Proceed to Payment"
@@ -431,6 +454,9 @@ export function ProductDetail({ product, onBack }: ProductDetailProps) {
         quantity,
         paymentMethod: 'cod',
       });
+
+      // Trigger success haptic feedback on mobile
+      successHaptic();
 
       // Show success immediately (optimistic UI)
       setCodOrderConfirmed(true);
@@ -773,6 +799,16 @@ export function ProductDetail({ product, onBack }: ProductDetailProps) {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50">
+      {/* COD Availability Popup (Mobile Only) */}
+      {showCodPopup && (
+        <div className="fixed top-20 left-1/2 -translate-x-1/2 z-50 animate-slide-down">
+          <div className="bg-gradient-to-r from-green-500 to-emerald-600 text-white px-6 py-3 rounded-full shadow-2xl flex items-center gap-3 backdrop-blur-sm border-2 border-white/30">
+            <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
+            <span className="font-bold text-sm">💰 Cash on Delivery Available!</span>
+          </div>
+        </div>
+      )}
+
       {/* Header with Back and Share Buttons */}
       <div className="max-w-sm sm:max-w-md mx-auto pt-4 px-4">
         <div className="flex items-center justify-between mb-4">
@@ -984,6 +1020,7 @@ export function ProductDetail({ product, onBack }: ProductDetailProps) {
                       type="button"
                       onClick={() => {
                         setPaymentMethod('online');
+                        selectionHaptic(); // Haptic feedback on selection
                         // Track add to cart when user selects payment method
                         trackAddToCart({
                           id: product.id,
@@ -1016,6 +1053,7 @@ export function ProductDetail({ product, onBack }: ProductDetailProps) {
                       type="button"
                       onClick={() => {
                         setPaymentMethod('cod');
+                        selectionHaptic(); // Haptic feedback on selection
                         // Track add to cart when user selects COD
                         trackAddToCart({
                           id: product.id,
