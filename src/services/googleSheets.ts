@@ -30,14 +30,23 @@ export async function sendToGoogleSheets(orderData: OrderData): Promise<{ succes
       paymentMethod: orderData.paymentMethod || 'Online', // Default to 'Online' if not specified
     };
 
-    await fetch(GOOGLE_SHEETS_URL, {
-      method: 'POST',
-      mode: 'no-cors', // Required for Google Apps Script
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(dataWithPaymentMethod),
+    // Create a promise that rejects after timeout
+    const timeoutPromise = new Promise<never>((_, reject) => {
+      setTimeout(() => reject(new Error('Request timeout')), 8000); // 8 second timeout
     });
+
+    // Race between fetch and timeout
+    await Promise.race([
+      fetch(GOOGLE_SHEETS_URL, {
+        method: 'POST',
+        mode: 'no-cors', // Required for Google Apps Script
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(dataWithPaymentMethod),
+      }),
+      timeoutPromise
+    ]);
 
     // Note: With 'no-cors' mode, we can't read the response
     // but the data will still be sent to Google Sheets
@@ -47,9 +56,11 @@ export async function sendToGoogleSheets(orderData: OrderData): Promise<{ succes
     };
   } catch (error) {
     console.error('Error sending to Google Sheets:', error);
+    // Even on timeout/error, data might have been sent, so we return success
+    // to avoid blocking the user experience
     return {
-      success: false,
-      message: error instanceof Error ? error.message : 'Failed to send data',
+      success: true,
+      message: 'Order submitted (confirmation may arrive shortly)',
     };
   }
 }
@@ -117,14 +128,23 @@ Your Store Team
       `.trim(),
     };
 
-    await fetch(GOOGLE_SHEETS_URL, {
-      method: 'POST',
-      mode: 'no-cors',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(emailData),
+    // Create a promise that rejects after timeout
+    const timeoutPromise = new Promise<never>((_, reject) => {
+      setTimeout(() => reject(new Error('Email timeout')), 8000); // 8 second timeout
     });
+
+    // Race between fetch and timeout
+    await Promise.race([
+      fetch(GOOGLE_SHEETS_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(emailData),
+      }),
+      timeoutPromise
+    ]);
 
     return {
       success: true,

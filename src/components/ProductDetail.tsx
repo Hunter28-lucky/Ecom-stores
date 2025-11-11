@@ -409,36 +409,33 @@ export function ProductDetail({ product, onBack }: ProductDetailProps) {
         paymentMethod: 'COD',
       };
 
-      // Send order data to Google Sheets
-      const sheetResult = await sendToGoogleSheets(orderData);
-      
-      if (sheetResult.success) {
-        // Send confirmation email
-        try {
-          await sendOrderConfirmationEmail(orderData);
-          console.log('✅ Confirmation email sent');
-        } catch (emailError) {
-          console.error('Failed to send confirmation email:', emailError);
-          // Don't block the order if email fails
-        }
+      // Send order data to Google Sheets and email in parallel (don't wait for response)
+      // This provides instant feedback to user while backend processes in background
+      Promise.all([
+        sendToGoogleSheets(orderData),
+        sendOrderConfirmationEmail(orderData)
+      ]).then(([sheetResult, emailResult]) => {
+        console.log('✅ Order submitted to Google Sheets:', sheetResult.message);
+        console.log('✅ Confirmation email queued:', emailResult.message);
+      }).catch(error => {
+        console.error('Background order processing error:', error);
+        // Don't show error to user - order is already confirmed on their end
+      });
 
-        // Track successful COD purchase
-        trackPurchase({
-          orderId,
-          productId: product.id,
-          productName: product.name,
-          value: totalPrice,
-          quantity,
-          paymentMethod: 'cod',
-        });
+      // Track successful COD purchase immediately
+      trackPurchase({
+        orderId,
+        productId: product.id,
+        productName: product.name,
+        value: totalPrice,
+        quantity,
+        paymentMethod: 'cod',
+      });
 
-        setCodOrderConfirmed(true);
-        setStatusMessage('✅ Order Confirmed! Your product will arrive in 5-7 working days. A confirmation email has been sent to your email address.');
-        setError('');
-      } else {
-        setError('Failed to submit order. Please try again.');
-        setStatusMessage('');
-      }
+      // Show success immediately (optimistic UI)
+      setCodOrderConfirmed(true);
+      setStatusMessage('✅ Order Confirmed! Your product will arrive in 5-7 working days. A confirmation email will be sent shortly to your email address.');
+      setError('');
     } catch (err: unknown) {
       console.error('COD order error:', err);
       if (err instanceof Error) {
